@@ -24,7 +24,7 @@ public class GameGui extends JFrame implements ActionListener
     public GameGui()
     {
 
-
+        //mały komentarz żeby sprawdzić czy moge uplowdować zmiany na repo :)
 
 
 
