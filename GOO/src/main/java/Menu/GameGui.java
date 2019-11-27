@@ -4,12 +4,18 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Scanner;
 import javax.swing.*;
 
 
 
-public class GameGui extends JFrame implements ActionListener
-{
+public class GameGui extends JFrame implements ActionListener {
     private JButton bBack, bStart;
     private JLabel bg;
     private	JRadioButton smallBoard, mediumBoard, normalBoard;
@@ -21,11 +27,9 @@ public class GameGui extends JFrame implements ActionListener
     private boolean first = true;
 
 
-    public GameGui()
+    GameGui ()
     {
-
-        //mały komentarz żeby sprawdzić czy moge uplowdować zmiany na repo :)
-
+        //TO DO wybranie nazwy gracza, romziaru planszy i czy grać z botem czy człowiekiem
 
 
         //TO DO
@@ -33,6 +37,7 @@ public class GameGui extends JFrame implements ActionListener
         setSize(1366, 768);
         setTitle("Go game - Settings");
         setLayout(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 
         //Back button
@@ -158,7 +163,9 @@ public class GameGui extends JFrame implements ActionListener
         bg.setOpaque(true);
         bg.setBounds(0, 0, 1366, 768);
         add(bg);
+
     }
+
 
     public void actionPerformed(ActionEvent e)
     {
@@ -185,6 +192,7 @@ public class GameGui extends JFrame implements ActionListener
         if (source == bBack)
         {
             MenuGui menu = new MenuGui();
+            menu.setLocation(this.getX(), this.getY());
             menu.setVisible(true);
             this.setVisible(false);
         }
@@ -213,10 +221,13 @@ public class GameGui extends JFrame implements ActionListener
             }
         }
         if(source == bStart){
-            SettingsGui settings = new SettingsGui();
-            settings.setVisible(true);
+            BoardGui playingBoard = new BoardGui();
+            playingBoard.setLocation(this.getX(), this.getY());
+            playingBoard.setVisible(true);
             this.setVisible(false);
         }
 
     }
+
+
 }
