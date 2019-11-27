@@ -36,6 +36,7 @@ public class SettingsGui extends JFrame implements ActionListener
         setSize(1366, 768);
         setTitle("GO game - Settings");
         setLayout(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 
         //Exit button
@@ -220,6 +221,7 @@ public class SettingsGui extends JFrame implements ActionListener
         if (source == bBack)
         {
             MenuGui menu = new MenuGui();
+            menu.setLocation(this.getX(), this.getY());
             menu.setVisible(true);
             this.setVisible(false);
         }
@@ -257,7 +259,7 @@ public class SettingsGui extends JFrame implements ActionListener
             {
                 setSize(800, 600);
                 repaint();
-            };
+            }
         }
 
     }
