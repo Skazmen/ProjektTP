@@ -3,6 +3,13 @@ package Menu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Scanner;
 import javax.swing.*;
 
 
@@ -12,10 +19,11 @@ public class MenuGui extends JFrame implements ActionListener {
     private boolean first = true;
 
 
-    public MenuGui() {
+    MenuGui() {
         setSize(1366, 768);
         setTitle("GO game");
         setLayout(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 
         //Exit button
@@ -41,14 +49,14 @@ public class MenuGui extends JFrame implements ActionListener {
 
 
         //Settings button
-        bSettings = new JButton("SETTINGS");
+        /*bSettings = new JButton("SETTINGS");
         bSettings.setBounds(20, 600, 350, 50);
         add(bSettings);
         bSettings.setForeground(Color.black);
         bSettings.setContentAreaFilled(false);
         bSettings.setToolTipText("Click here to New Game");
         bSettings.setFont(new Font("SansSerif", Font.BOLD, 48));
-        bSettings.addActionListener(this);
+        bSettings.addActionListener(this);*/
 
         //Settings button
         bLoadGame = new JButton("LOAD");
@@ -92,16 +100,18 @@ public class MenuGui extends JFrame implements ActionListener {
 
         if (source == bExit)
             dispose();//exit
-        if (source == bSettings)
+        /*else if (source == bSettings)
         {
             SettingsGui settings = new SettingsGui();
+            settings.setLocation(this.getX(), this.getY());
             settings.setVisible(true);
             this.setVisible(false);
-        }
+        }*/
 
-        if (source == bNewGame)
+        else if (source == bNewGame)
         {
             GameGui game = new GameGui();
+            game.setLocation(this.getX(), this.getY());
             game.setVisible(true);
             this.setVisible(false);
         }
