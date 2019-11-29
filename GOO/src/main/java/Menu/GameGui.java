@@ -29,11 +29,10 @@ public class GameGui extends JFrame implements ActionListener {
 
     GameGui ()
     {
-        //TO DO wybranie nazwy gracza, romziaru planszy i czy grać z botem czy człowiekiem
+        //todo wybranie nazwy gracza, romziaru planszy i czy grać z botem czy człowiekiem
 
 
-        //TO DO
-        //After choose option in ComboBoc refresh page - sizeOf(nicklist) = N;
+        //todo After choose option in ComboBoc refresh page - sizeOf(nicklist) = N;
         setSize(1366, 768);
         setTitle("Go game - Settings");
         setLayout(null);
