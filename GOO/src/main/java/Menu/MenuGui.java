@@ -3,21 +3,12 @@ package Menu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.ConnectException;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Scanner;
 import javax.swing.*;
 
-
 public class MenuGui extends JFrame implements ActionListener {
-    private JButton bExit, bNewGame, bSettings, bLoadGame;
-    private JLabel bg;
+    private JButton exitButton, newGameButton, settingsButton, loadGameButton;
+    private JLabel backGroundLabel;
     private boolean first = true;
-
 
     MenuGui() {
         setSize(1366, 768);
@@ -26,28 +17,25 @@ public class MenuGui extends JFrame implements ActionListener {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
-
         //Exit button
-        bExit = new JButton("EXIT");
-        bExit.setBounds(1180, 660, 100, 30);
-        add(bExit);
-        bExit.setForeground(Color.black);
-        bExit.setContentAreaFilled(false);
-        bExit.setToolTipText("Click here to exit program");
-        bExit.setFont(new Font("SansSerif", Font.BOLD, 20));
-        bExit.addActionListener(this);
-
+        exitButton = new JButton("EXIT");
+        exitButton.setBounds(1180, 660, 100, 30);
+        add(exitButton);
+        exitButton.setForeground(Color.black);
+        exitButton.setContentAreaFilled(false);
+        exitButton.setToolTipText("Click here to exit program");
+        exitButton.setFont(new Font("SansSerif", Font.BOLD, 20));
+        exitButton.addActionListener(this);
 
         //New Game button
-        bNewGame = new JButton("NEW GAME");
-        bNewGame.setBounds(1020, 530, 350, 50);
-        add(bNewGame);
-        bNewGame.setForeground(Color.black);
-        bNewGame.setContentAreaFilled(false);
-        bNewGame.setToolTipText("Click here to New Game");
-        bNewGame.setFont(new Font("SansSerif", Font.BOLD, 48));
-        bNewGame.addActionListener(this);
-
+        newGameButton = new JButton("NEW GAME");
+        newGameButton.setBounds(1020, 530, 350, 50);
+        add(newGameButton);
+        newGameButton.setForeground(Color.black);
+        newGameButton.setContentAreaFilled(false);
+        newGameButton.setToolTipText("Click here to New Game");
+        newGameButton.setFont(new Font("SansSerif", Font.BOLD, 48));
+        newGameButton.addActionListener(this);
 
         //Settings button
         /*bSettings = new JButton("SETTINGS");
@@ -60,47 +48,43 @@ public class MenuGui extends JFrame implements ActionListener {
         bSettings.addActionListener(this);*/
 
         //Settings button
-        bLoadGame = new JButton("LOAD");
-        bLoadGame.setBounds(1100, 600, 250, 50);
-        add(bLoadGame);
-        bLoadGame.setForeground(Color.black);
-        bLoadGame.setContentAreaFilled(false);
-        bLoadGame.setToolTipText("Click here to Load Game");
-        bLoadGame.setFont(new Font("SansSerif", Font.BOLD, 48));
-        bLoadGame.addActionListener(this);
-
-
+        loadGameButton = new JButton("LOAD");
+        loadGameButton.setBounds(1100, 600, 250, 50);
+        add(loadGameButton);
+        loadGameButton.setForeground(Color.black);
+        loadGameButton.setContentAreaFilled(false);
+        loadGameButton.setToolTipText("Click here to Load Game");
+        loadGameButton.setFont(new Font("SansSerif", Font.BOLD, 48));
+        loadGameButton.addActionListener(this);
 
         //Background
-        bg = new JLabel(new ImageIcon("images/GO_BG.jpg"));
-        bg.setOpaque(true);
-        bg.setBounds(0, 0, 1366, 768);
-        add(bg);
+        backGroundLabel = new JLabel(new ImageIcon("images/GO_BG.jpg"));
+        backGroundLabel.setOpaque(true);
+        backGroundLabel.setBounds(0, 0, 1366, 768);
+        add(backGroundLabel);
     }
 
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
+        remove(backGroundLabel);
 
-        remove(bg);	//tlo
-        if (first)
-        {
-            bg = new JLabel(new ImageIcon("images/GO_BG.jpg"));
-            bg.setOpaque(true);
-            bg.setBounds(0, 0, 1366, 768);
+        if (first) {
+            backGroundLabel = new JLabel(new ImageIcon("images/GO_BG.jpg"));
+            backGroundLabel.setOpaque(true);
+            backGroundLabel.setBounds(0, 0, 1366, 768);
+        } else {
+            backGroundLabel = new JLabel(new ImageIcon("images/GO_BG.jpg"));
+            backGroundLabel.setOpaque(true);
+            backGroundLabel.setBounds(0, 0, 1366, 768);
         }
-        else
-        {
-            bg = new JLabel(new ImageIcon("images/GO_BG.jpg"));
-            bg.setOpaque(true);
-            bg.setBounds(0, 0, 1366, 768);
-        }
-        add(bg);
-        first=!first;
-        repaint();	//to here
 
-        if (source == bExit)
+        add(backGroundLabel);
+        first = !first;
+        repaint();
+
+        if (source == exitButton) {
             dispose();//exit
+        }
         /*else if (source == bSettings)
         {
             SettingsGui settings = new SettingsGui();
@@ -109,15 +93,11 @@ public class MenuGui extends JFrame implements ActionListener {
             this.setVisible(false);
         }*/
 
-        else if (source == bNewGame)
-        {
+        else if (source == newGameButton) {
             GameGui game = new GameGui();
             game.setLocation(this.getX(), this.getY());
             game.setVisible(true);
             this.setVisible(false);
         }
-
-
     }
-
 }
