@@ -19,7 +19,7 @@ import javax.swing.*;
 
 public class GameGui extends JFrame implements ActionListener {
     private JButton bBack, bStart;
-    private JLabel bg;
+    private JLabel bg, test;
     private JRadioButton smallBoard, mediumBoard, normalBoard;
     private JLabel lNewGame, lNoOfPlayers, lNick;
     private ButtonGroup bgGamePanel;
@@ -143,6 +143,10 @@ public class GameGui extends JFrame implements ActionListener {
         bg.setOpaque(true);
         bg.setBounds(0, 0, 1366, 768);
         add(bg);
+
+        test = new JLabel();
+        test.setBounds(0, 0, 1366, 768);
+        add(test);
 
     }
 
