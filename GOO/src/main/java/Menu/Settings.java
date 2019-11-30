@@ -1,6 +1,6 @@
 package Menu;
 
-import Server.Players;
+import Server.Enums.Players;
 
 public class Settings {
     public static Players players;

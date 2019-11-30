@@ -7,10 +7,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class Server {
-
-
 	public static void main(String[] args) {
-
 		int serverPort = 59898;
 		try (ServerSocket listener = new ServerSocket(serverPort)) {
 			System.out.println("The server is running...");
@@ -25,5 +22,4 @@ public class Server {
 			System.out.println("Cannot run server on socket " + serverPort);
 		}
 	}
-
 }
