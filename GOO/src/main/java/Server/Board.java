@@ -51,6 +51,13 @@ class Board {
 					MessagesClient clientMessage = MessagesClient.valueOf(scanner.nextLine());
 					switch (clientMessage){
 						case WAITING_FOR_GAME:
+							/*
+							-todo> wszystkie pola jakie masz na tym boardzie -> zaznaczasz żę so not editable
+							todo-> zrób sobie jakąś labelkę, która ma opacity na 0 (z tego co pamiętam, ale musisz doczytać czy na 0) i wtedy jest jakby pod wszystkim, niewidoczna - ona musi być z
+							z defaultu tak ustawiona
+							-> i teraz w moemncie gdy jesteś wk którym kolwiek tych casów, to zmieniasz textkst tej labalki w TYM miejscu
+							dodatkowo ustawiając oapcity na 1 -> żeby byąą widoczna. Tym smamym masz zablokowane akcje uzytkownika oraz nie wyświetlone labelki
+							 */
 							System.out.println("client " + player + " is waiting for another player");
 							sendToClient(player, MessagesServer.SET_COLOR_BLACK);
 							break;

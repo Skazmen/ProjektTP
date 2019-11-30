@@ -37,6 +37,7 @@ public class SettingsGui extends JFrame implements ActionListener
         setTitle("GO game - Settings");
         setLayout(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
 
 
         //Exit button

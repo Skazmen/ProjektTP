@@ -6,6 +6,5 @@ public enum MessagesClient {
 	MADE_MOVE, 			//when user makes a move
 	GIVE_UP_MOVE, 		//when user decides not to do a move in this turn
 	SURRENDER, 			//when user states he loses and gives a game with valcover
-
 	CLOSE 				//when client closed his window
 }

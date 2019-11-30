@@ -1,5 +1,7 @@
 package Menu;
 
+import Server.Players;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -10,37 +12,37 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Objects;
 import java.util.Scanner;
 import javax.swing.*;
-
 
 
 public class GameGui extends JFrame implements ActionListener {
     private JButton bBack, bStart;
     private JLabel bg;
-    private	JRadioButton smallBoard, mediumBoard, normalBoard;
+    private JRadioButton smallBoard, mediumBoard, normalBoard;
     private JLabel lNewGame, lNoOfPlayers, lNick;
-    private	ButtonGroup bgGamePanel;
-    private JTextField tPlayer0, tPlayer1;
+    private ButtonGroup bgGamePanel;
+    private JTextField tPlayer2, tPlayer1;
     private JComboBox cbNoOfPlayers;
-    private JCheckBox cbNick, cbHuman0, cbHuman1;
+    private JCheckBox cbNick;
     private boolean first = true;
 
 
-    GameGui ()
-    {
+    GameGui() {
         //todo wybranie nazwy gracza, romziaru planszy i czy grać z botem czy człowiekiem
 
 
         //todo After choose option in ComboBoc refresh page - sizeOf(nicklist) = N;
         setSize(1366, 768);
-        setTitle("Go game - Settings");
+        setTitle("Go game - New Game");
         setLayout(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
 
 
         //Back button
-        bBack = new JButton ("BACK");
+        bBack = new JButton("BACK");
         bBack.setBounds(1180, 660, 100, 30);
         add(bBack);
         bBack.setForeground(Color.black);
@@ -51,7 +53,7 @@ public class GameGui extends JFrame implements ActionListener {
 
 
         //New Game button
-        bStart = new JButton ("START");
+        bStart = new JButton("START");
         bStart.setBounds(1040, 660, 120, 30);
         add(bStart);
         bStart.setForeground(Color.black);
@@ -65,23 +67,23 @@ public class GameGui extends JFrame implements ActionListener {
         lNewGame = new JLabel("Select type of game: ");
         lNewGame.setFont(new Font("SansSerif", Font.BOLD, 18));
         lNewGame.setForeground(Color.white);
-        lNewGame.setBounds(220, 30, 230, 25);
+        lNewGame.setBounds(220, 280, 230, 25);
         add(lNewGame);
 
-        bgGamePanel = new ButtonGroup ();
+        bgGamePanel = new ButtonGroup();
         smallBoard = new JRadioButton("smallBoard(9x9)");
         smallBoard.setForeground(Color.white);
         smallBoard.setContentAreaFilled(false);
-        smallBoard.setBounds(440, 30, 145, 25);
+        smallBoard.setBounds(440, 280, 145, 25);
         smallBoard.setSelected(true); //randommly selected
 
         mediumBoard = new JRadioButton("mediumBoard(13x13)");
-        mediumBoard.setBounds(585, 30, 175, 25);
+        mediumBoard.setBounds(585, 280, 180, 25);
         mediumBoard.setForeground(Color.white);
         mediumBoard.setContentAreaFilled(false);
 
-        normalBoard = new JRadioButton("normalBoard(19x19");
-        normalBoard.setBounds(760, 30, 175, 25);
+        normalBoard = new JRadioButton("normalBoard(19x19)");
+        normalBoard.setBounds(760, 280, 175, 25);
         normalBoard.setForeground(Color.white);
         normalBoard.setContentAreaFilled(false);
 
@@ -96,65 +98,44 @@ public class GameGui extends JFrame implements ActionListener {
         lNoOfPlayers = new JLabel("Select number of human players:");
         lNoOfPlayers.setFont(new Font("SansSerif", Font.BOLD, 18));
         lNoOfPlayers.setForeground(Color.white);
-        lNoOfPlayers.setBounds(220, 65, 295, 25);
+        lNoOfPlayers.setBounds(220, 315, 370, 25);
         add(lNoOfPlayers);
 
         JComboBox cbNoOfPlayers = new JComboBox();
-        for (int i = 1; i <= 2; i++)
-            cbNoOfPlayers.addItem(i);
-        cbNoOfPlayers.setBounds(525, 65, 50, 25);
+        cbNoOfPlayers.addItem("one");
+        cbNoOfPlayers.addItem("two");
+        cbNoOfPlayers.setBounds(590, 315, 50, 25);
         getContentPane().add(cbNoOfPlayers);
-
-
-        //human or boot
-        cbHuman0 = new JCheckBox("Human?"); //check box
-        cbHuman0.setBounds(420, 175, 100, 20);
-        cbHuman0.setFont(new Font("SansSerif", Font.BOLD, 14));
-        cbHuman0.setForeground(Color.white);
-        cbHuman0.setContentAreaFilled(false);
-        cbHuman0.addActionListener(this);
-        cbHuman0.setVisible(false);
-        add(cbHuman0);
-
-        cbHuman1 = new JCheckBox("Human?"); //check box
-        cbHuman1.setBounds(420, 205, 200, 20);
-        cbHuman1.setFont(new Font("SansSerif", Font.BOLD, 14));
-        cbHuman1.setForeground(Color.white);
-        cbHuman1.setContentAreaFilled(false);
-        cbHuman1.addActionListener(this);
-        cbHuman1.setVisible(false);
-        add(cbHuman1);
-
+        cbNoOfPlayers.addActionListener(this);
 
 
         //nick of players
         cbNick = new JCheckBox("Do you want to change youre nicks set in Settings?"); //check box
-        cbNick.setBounds(200, 100, 500, 20);
+        cbNick.setBounds(220, 350, 650, 20);
         cbNick.setFont(new Font("SansSerif", Font.BOLD, 18));
         cbNick.setForeground(Color.white);
         cbNick.setContentAreaFilled(false);
         cbNick.addActionListener(this);
         add(cbNick);
 
-        lNick = new JLabel("Please type nick in fileds: ");
+        lNick = new JLabel("Please type nick in fields: ");
         lNick.setFont(new Font("SansSerif", Font.BOLD, 18));
         lNick.setForeground(Color.white);
-        lNick.setBounds(290, 135, 260, 25);
+        lNick.setBounds(290, 385, 280, 25);
         lNick.setVisible(false);
         add(lNick);
 
-        tPlayer1 = new JTextField ("Player1");		//area to fill text
-        tPlayer1.setBounds(530 , 175, 130, 25);
+        tPlayer1 = new JTextField("Player1");        //area to fill text
+        tPlayer1.setBounds(530, 425, 130, 25);
         add(tPlayer1);
         tPlayer1.setToolTipText("Please type nick of Player1"); //tool tip
         tPlayer1.setVisible(false);
 
-        tPlayer0= new JTextField ("Player0");		//area to fill text
-        tPlayer0.setBounds(530 , 205, 130, 25);
-        add(tPlayer0);
-        tPlayer0.setToolTipText("Please type nick of Player0"); //tool tip
-        tPlayer0.setVisible(false);
-
+        tPlayer2 = new JTextField("Player2/Bot");        //area to fill text
+        tPlayer2.setBounds(530, 455, 130, 25);
+        add(tPlayer2);
+        tPlayer2.setToolTipText("Please type nick of Player2 or Bot"); //tool tip
+        tPlayer2.setVisible(false);
 
 
         //background
@@ -166,30 +147,26 @@ public class GameGui extends JFrame implements ActionListener {
     }
 
 
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
 
-        remove(bg);	//tlo
-        if (first)
-        {
+        remove(bg);    //tlo
+        if (first) {
+            bg = new JLabel(new ImageIcon("images/GO_BG.jpg"));
+            bg.setOpaque(true);
+            bg.setBounds(0, 0, 1366, 768);
+        } else {
             bg = new JLabel(new ImageIcon("images/GO_BG.jpg"));
             bg.setOpaque(true);
             bg.setBounds(0, 0, 1366, 768);
         }
-        else
-        {
-            bg = new JLabel(new ImageIcon("images/GO_BG.jpg"));
-            bg.setOpaque(true);
-            bg.setBounds(0, 0, 1366, 768);
-        }
+
         add(bg);
-        first=!first;
-        repaint();	//to here
+        first = !first;
+        repaint();    //to here
 
 
-        if (source == bBack)
-        {
+        if (source == bBack) {
             MenuGui menu = new MenuGui();
             menu.setLocation(this.getX(), this.getY());
             menu.setVisible(true);
@@ -201,32 +178,47 @@ public class GameGui extends JFrame implements ActionListener {
             if (cbNick.isSelected())
             {
                 lNick.setVisible(true);
-                tPlayer0.setVisible(true);
+                tPlayer2.setVisible(true);
                 tPlayer1.setVisible(true);
-
-                cbHuman0.setVisible(true);
-                cbHuman1.setVisible(true);
 
             }
             else if (!cbNick.isSelected())
             {
                 lNick.setVisible(false);
-                tPlayer0.setVisible(false);
+                tPlayer2.setVisible(false);
                 tPlayer1.setVisible(false);
-
-                cbHuman0.setVisible(false);
-                cbHuman1.setVisible(false);
 
             }
         }
-        if(source == bStart){
-            BoardGui playingBoard = new BoardGui();
-            playingBoard.setLocation(this.getX(), this.getY());
-            playingBoard.setVisible(true);
-            this.setVisible(false);
+        //todo trzeba zrobic dla kazdego rozmiaru
+        if (source == bStart) {
+            if (smallBoard.isSelected()) {
+                BoardGui playingBoard = new BoardGui();
+                playingBoard.setLocation(this.getX(), this.getY());
+                playingBoard.setVisible(true);
+                this.setVisible(false);
+            } else if (mediumBoard.isSelected()) {
+                BoardGui playingBoard = new BoardGui();
+                playingBoard.setLocation(this.getX(), this.getY());
+                playingBoard.setVisible(true);
+                this.setVisible(false);
+            } else {
+                BoardGui playingBoard = new BoardGui();
+                playingBoard.setLocation(this.getX(), this.getY());
+                playingBoard.setVisible(true);
+                this.setVisible(false);
+            }
         }
 
+        if (source == cbNoOfPlayers) {
+
+            String liczbaGraczy = cbNoOfPlayers.getSelectedItem().toString();
+
+            if (liczbaGraczy.equals("one") ) { //set players with bot and one player
+                Settings.players = Players.get(0);
+            } else { //set plaeyrs with second player
+                Settings.players = Players.get(2);
+            }
+        }
     }
-
-
 }

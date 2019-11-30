@@ -9,6 +9,7 @@ public class Menu //extends JFrame
         MenuGui started = new MenuGui();
         started.setVisible(true);
 
+
         //center window
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         int axisX = (int) ((dimension.getWidth() - started.getWidth()) / 2);
