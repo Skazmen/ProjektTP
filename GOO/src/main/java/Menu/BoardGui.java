@@ -3,6 +3,8 @@ package Menu;
 import Server.MessagesClient;
 import Server.MessagesServer;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -14,15 +16,19 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
+import java.awt.Color;
+import java.awt.Font;
 
-class BoardGui extends JFrame {
+public class BoardGui extends JFrame implements ActionListener{
 
 	private Scanner in;
 	private PrintWriter out;
 	private CountDownLatch sync = new CountDownLatch(1); //for 'sendToServer' to wait for 'out' to be inicjalized;
+	private JButton bSurrender;
+	private JLabel bg;
+	private boolean first = true;
 
 	BoardGui(){
-
 		//połączenie z serwerem
 		connectToServer();
 
@@ -33,12 +39,33 @@ class BoardGui extends JFrame {
 		sendToServer(MessagesClient.SURRENDER);
 
 		setSize(1366, 768);
-		setTitle("Go game - Board");
+		setTitle("Go game - Loading");
 		setLayout(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setResizable(false);
 
-		//zaleznie od state odpowiednio wszytsko narysować
 
+		//Back button
+		bSurrender = new JButton("leave");
+		bSurrender.setBounds(1180, 660, 180, 30);
+		add(bSurrender);
+		bSurrender.setForeground(Color.white);
+		bSurrender.setContentAreaFilled(false);
+		bSurrender.setToolTipText("Click here to leave session");
+		bSurrender.setFont(new Font("SansSerif", Font.BOLD, 20));
+		bSurrender.addActionListener(this);
+		setResizable(false);
+
+		//background
+		bg = new JLabel(new ImageIcon("images/loading.jpg"));
+		bg.setOpaque(true);
+		bg.setBounds(0, 0, 1366, 768);
+		add(bg);
+
+
+
+
+		//todo zaleznie od state odpowiednio wszytsko narysować
 
 		//powiadomienie serwera przed zamknieciem
 		this.addWindowListener(new WindowAdapter() {
@@ -49,8 +76,36 @@ class BoardGui extends JFrame {
 			}
 		});
 	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object source = e.getSource();
 
-	private void connectToServer() {
+		remove(bg);    //tlo
+		if (first) {
+			bg = new JLabel(new ImageIcon("images/loading.jpg"));
+			bg.setOpaque(true);
+			bg.setBounds(0, 0, 1366, 768);
+		} else {
+			bg = new JLabel(new ImageIcon("images/loading.jpg"));
+			bg.setOpaque(true);
+			bg.setBounds(0, 0, 1366, 768);
+		}
+		add(bg);
+		first = !first;
+		repaint();    //to here
+
+
+		if (source == bSurrender) {
+			sendToServer(MessagesClient.SURRENDER);
+			MenuGui menu = new MenuGui();
+			menu.setLocation(this.getX(), this.getY());
+			menu.setVisible(true);
+			this.setVisible(false);
+		}
+
+	}
+
+	private void connectToServer() { //pokaz mi miejsce  wktórym dostjaesz info z backendu że np gracz ywkonał ruch, albo w ktorym miejscu to sie wyswie
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -103,5 +158,4 @@ class BoardGui extends JFrame {
 		}).start();
 
 	}
-
 }

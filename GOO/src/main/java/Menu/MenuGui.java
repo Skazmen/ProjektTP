@@ -24,6 +24,7 @@ public class MenuGui extends JFrame implements ActionListener {
         setTitle("GO game");
         setLayout(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
 
 
         //Exit button
@@ -39,7 +40,7 @@ public class MenuGui extends JFrame implements ActionListener {
 
         //New Game button
         bNewGame = new JButton("NEW GAME");
-        bNewGame.setBounds(20, 500, 350, 50);
+        bNewGame.setBounds(1020, 530, 350, 50);
         add(bNewGame);
         bNewGame.setForeground(Color.black);
         bNewGame.setContentAreaFilled(false);
