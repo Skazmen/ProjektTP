@@ -1,4 +1,6 @@
-package Server;
+package Server.Enums;
+
+import Server.Server;
 
 //wysyłane przez server do clienta
 public enum MessagesServer {
