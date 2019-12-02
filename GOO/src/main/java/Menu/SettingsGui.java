@@ -15,32 +15,27 @@ import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-
-public class SettingsGui extends JFrame implements ActionListener
-{
-    private JButton bBack, bSave;
-    private JLabel bg;
-    private JLabel lNewGame, lScreenResolution, lNoOfPlayers, lNick;
-    private	ButtonGroup bgGamePanel, bgScreenResolution;
-    private JTextField tPlayer0, tPlayer1;
-    private JComboBox cbNoOfPlayers;
-    private JCheckBox cbNick, cbHuman0, cbHuman1;
-    private	JRadioButton rbSmallBoard, rbMediumBoard, rbNormalBoard, rbSmall, rbMedium;
+public class SettingsGui extends JFrame implements ActionListener {
+    private JButton bBack, backButton;
+    private JLabel backGroundLabel;
+    private JLabel newGameLabel, screenResolutionLabel, noOfPlayersLabel, nickLabel;
+    private ButtonGroup gamePanelButtonGroup, screenResolutionButtonGroup;
+    private JTextField player0TextField, player1TextField;
+    private JComboBox noOfPlayersComboBox;
+    private JCheckBox nickCheckBox, human0CheckBox, human1CheckBox;
+    private JRadioButton smallBoardRadioButton, mediumBoardRadioButton, normalBoardRadioButton, smallRadioButton, mediumRadioButton;
     private boolean first = true;
 
-
-    public SettingsGui()
-    {
+    public SettingsGui() {
         //setter = new Setter(); po uploadzie tla, czyli tlo idzie pierwsze
-
         setSize(1366, 768);
         setTitle("GO game - Settings");
         setLayout(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-
+        setResizable(false);
 
         //Exit button
-        bBack = new JButton ("BACK");
+        bBack = new JButton("BACK");
         bBack.setBounds(1180, 660, 100, 30);
         add(bBack);
         //bBack.setBackground(Color.GREEN);
@@ -51,216 +46,197 @@ public class SettingsGui extends JFrame implements ActionListener
         bBack.setFont(new Font("SansSerif", Font.BOLD, 20));
         bBack.addActionListener(this);
 
-
         //Save button
-        bSave = new JButton ("SAVE");
-        bSave.setBounds(1040, 660, 100, 30);
-        add(bSave);
+        backButton = new JButton("SAVE");
+        backButton.setBounds(1040, 660, 100, 30);
+        add(backButton);
         //bSave.setBackground(Color.GREEN);
-        bSave.setForeground(Color.black);
-        bSave.setContentAreaFilled(false);
+        backButton.setForeground(Color.black);
+        backButton.setContentAreaFilled(false);
         //bSave.setBorderPainted(false);
-        bSave.setToolTipText("Click here to go save");
-        bSave.setFont(new Font("SansSerif", Font.BOLD, 20));
-        bSave.addActionListener(this);
-
+        backButton.setToolTipText("Click here to go save");
+        backButton.setFont(new Font("SansSerif", Font.BOLD, 20));
+        backButton.addActionListener(this);
 
         //Screen Resolution panel
-        lScreenResolution = new JLabel("Select screen resolution:");
-        lScreenResolution.setFont(new Font("SansSerif", Font.BOLD, 18));
-        lScreenResolution.setForeground(Color.white);
-        lScreenResolution.setBounds(220, 30, 265, 25);
-        add(lScreenResolution);
+        screenResolutionLabel = new JLabel("Select screen resolution:");
+        screenResolutionLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
+        screenResolutionLabel.setForeground(Color.white);
+        screenResolutionLabel.setBounds(220, 30, 265, 25);
+        add(screenResolutionLabel);
 
-        bgScreenResolution = new ButtonGroup ();
-        rbSmall = new JRadioButton("800 x 600");
-        rbSmall.setForeground(Color.white);
-        rbSmall.setContentAreaFilled(false);
-        rbSmall.setBounds(500, 30, 90, 25);
+        screenResolutionButtonGroup = new ButtonGroup();
+        smallRadioButton = new JRadioButton("800 x 600");
+        smallRadioButton.setForeground(Color.white);
+        smallRadioButton.setContentAreaFilled(false);
+        smallRadioButton.setBounds(500, 30, 90, 25);
 
-        rbMedium = new JRadioButton("1366 x 768");
-        rbMedium.setBounds(600, 30, 150, 25);
-        rbMedium.setForeground(Color.white);
-        rbMedium.setContentAreaFilled(false);
-        rbMedium.setSelected(true); //randommly selected
+        mediumRadioButton = new JRadioButton("1366 x 768");
+        mediumRadioButton.setBounds(600, 30, 150, 25);
+        mediumRadioButton.setForeground(Color.white);
+        mediumRadioButton.setContentAreaFilled(false);
+        mediumRadioButton.setSelected(true); //randommly selected
 
-        bgScreenResolution.add(rbSmall);
-        bgScreenResolution.add(rbMedium);
+        screenResolutionButtonGroup.add(smallRadioButton);
+        screenResolutionButtonGroup.add(mediumRadioButton);
 
-        add(rbSmall);
-        add(rbMedium);
-
+        add(smallRadioButton);
+        add(mediumRadioButton);
 
         //New game panel
-        lNewGame = new JLabel("Select type of game: ");
-        lNewGame.setFont(new Font("SansSerif", Font.BOLD, 18));
-        lNewGame.setForeground(Color.white);
-        lNewGame.setBounds(220, 65, 250, 25);
-        add(lNewGame);
+        newGameLabel = new JLabel("Select type of game: ");
+        newGameLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
+        newGameLabel.setForeground(Color.white);
+        newGameLabel.setBounds(220, 65, 250, 25);
+        add(newGameLabel);
 
-        bgGamePanel = new ButtonGroup ();
-        rbSmallBoard = new JRadioButton("9x9");
-        rbSmallBoard.setForeground(Color.white);
-        rbSmallBoard.setContentAreaFilled(false);
-        rbSmallBoard.setBounds(455, 65, 90, 25);
+        gamePanelButtonGroup = new ButtonGroup();
+        smallBoardRadioButton = new JRadioButton("9x9");
+        smallBoardRadioButton.setForeground(Color.white);
+        smallBoardRadioButton.setContentAreaFilled(false);
+        smallBoardRadioButton.setBounds(455, 65, 90, 25);
 
-        rbMediumBoard = new JRadioButton("13x13");
-        rbMediumBoard.setBounds(545, 65, 90, 25);
-        rbMediumBoard.setForeground(Color.white);
-        rbMediumBoard.setContentAreaFilled(false);
+        mediumBoardRadioButton = new JRadioButton("13x13");
+        mediumBoardRadioButton.setBounds(545, 65, 90, 25);
+        mediumBoardRadioButton.setForeground(Color.white);
+        mediumBoardRadioButton.setContentAreaFilled(false);
 
-        rbNormalBoard = new JRadioButton("19x19");
-        rbNormalBoard.setBounds(635, 65, 90, 25);
-        rbNormalBoard.setForeground(Color.white);
-        rbNormalBoard.setContentAreaFilled(false);
-        rbNormalBoard.setSelected(true); //randommly selected
+        normalBoardRadioButton = new JRadioButton("19x19");
+        normalBoardRadioButton.setBounds(635, 65, 90, 25);
+        normalBoardRadioButton.setForeground(Color.white);
+        normalBoardRadioButton.setContentAreaFilled(false);
+        normalBoardRadioButton.setSelected(true); //randommly selected
 
+        gamePanelButtonGroup.add(smallBoardRadioButton);
+        gamePanelButtonGroup.add(mediumBoardRadioButton);
+        gamePanelButtonGroup.add(normalBoardRadioButton);
 
-        bgGamePanel.add(rbSmallBoard);
-        bgGamePanel.add(rbMediumBoard);
-        bgGamePanel.add(rbNormalBoard);
-
-        add(rbSmallBoard);
-        add(rbMediumBoard);
-        add(rbNormalBoard);
-
+        add(smallBoardRadioButton);
+        add(mediumBoardRadioButton);
+        add(normalBoardRadioButton);
 
         //Number of Players panel
-        lNoOfPlayers = new JLabel("Select number of human players:");
-        lNoOfPlayers.setFont(new Font("SansSerif", Font.BOLD, 18));
-        lNoOfPlayers.setForeground(Color.white);
-        lNoOfPlayers.setBounds(220, 100, 370, 25);
-        add(lNoOfPlayers);
+        noOfPlayersLabel = new JLabel("Select number of human players:");
+        noOfPlayersLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
+        noOfPlayersLabel.setForeground(Color.white);
+        noOfPlayersLabel.setBounds(220, 100, 370, 25);
+        add(noOfPlayersLabel);
 
         //How many players?
-        JComboBox cbNoOfPlayers = new JComboBox();
-        for (int i = 1; i <= 2; i++)
-            cbNoOfPlayers.addItem(i);
-        cbNoOfPlayers.setBounds(580, 100, 50, 25);
-        getContentPane().add(cbNoOfPlayers);
+        noOfPlayersComboBox = new JComboBox();
 
+        for (int i = 1; i <= 2; i++) {
+            noOfPlayersComboBox.addItem(i);
+        }
+
+        noOfPlayersComboBox.setBounds(580, 100, 50, 25);
+        getContentPane().add(noOfPlayersComboBox);
 
         //nick of players
-        cbNick = new JCheckBox("Do you want set nick of players?"); //check box
-        cbNick.setBounds(200, 135, 400, 20);
-        cbNick.setFont(new Font("SansSerif", Font.BOLD, 18));
-        cbNick.setForeground(Color.white);
-        cbNick.setContentAreaFilled(false);
-        cbNick.addActionListener(this);
-        add(cbNick);
+        nickCheckBox = new JCheckBox("Do you want set nick of players?"); //check box
+        nickCheckBox.setBounds(200, 135, 400, 20);
+        nickCheckBox.setFont(new Font("SansSerif", Font.BOLD, 18));
+        nickCheckBox.setForeground(Color.white);
+        nickCheckBox.setContentAreaFilled(false);
+        nickCheckBox.addActionListener(this);
+        add(nickCheckBox);
 
-        lNick = new JLabel("Please type nick in fileds: ");
-        lNick.setFont(new Font("SansSerif", Font.BOLD, 18));
-        lNick.setForeground(Color.white);
-        lNick.setBounds(290, 170, 260, 25);
-        lNick.setVisible(false);
-        add(lNick);
+        nickLabel = new JLabel("Please type nick in fileds: ");
+        nickLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
+        nickLabel.setForeground(Color.white);
+        nickLabel.setBounds(290, 170, 260, 25);
+        nickLabel.setVisible(false);
+        add(nickLabel);
 
-        tPlayer1 = new JTextField ("Player1");		//area to fill text
-        tPlayer1.setBounds(530 , 205, 130, 25);
-        add(tPlayer1);
-        tPlayer1.setToolTipText("Please type nick of Player1"); //tool tip
-        tPlayer1.setVisible(false);
+        player1TextField = new JTextField("Player1");        //area to fill text
+        player1TextField.setBounds(530, 205, 130, 25);
+        add(player1TextField);
+        player1TextField.setToolTipText("Please type nick of Player1"); //tool tip
+        player1TextField.setVisible(false);
 
-        tPlayer0 = new JTextField ("Player2");		//area to fill text
-        tPlayer0.setBounds(530 , 235, 130, 25);
-        add(tPlayer0);
-        tPlayer0.setToolTipText("Please type nick of Player0"); //tool tip
-        tPlayer0.setVisible(false);
-
-
+        player0TextField = new JTextField("Player2");        //area to fill text
+        player0TextField.setBounds(530, 235, 130, 25);
+        add(player0TextField);
+        player0TextField.setToolTipText("Please type nick of Player0"); //tool tip
+        player0TextField.setVisible(false);
 
         //human or boot
-        cbHuman0 = new JCheckBox("Human?"); //check box
-        cbHuman0.setBounds(420, 205, 200, 20);
-        cbHuman0.setFont(new Font("SansSerif", Font.BOLD, 14));
-        cbHuman0.setForeground(Color.white);
-        cbHuman0.setContentAreaFilled(false);
-        cbHuman0.addActionListener(this);
-        cbHuman0.setVisible(false);
-        add(cbHuman0);
+        human0CheckBox = new JCheckBox("Human?"); //check box
+        human0CheckBox.setBounds(420, 205, 200, 20);
+        human0CheckBox.setFont(new Font("SansSerif", Font.BOLD, 14));
+        human0CheckBox.setForeground(Color.white);
+        human0CheckBox.setContentAreaFilled(false);
+        human0CheckBox.addActionListener(this);
+        human0CheckBox.setVisible(false);
+        add(human0CheckBox);
 
-        cbHuman1 = new JCheckBox("Human?"); //check box
-        cbHuman1.setBounds(420, 235, 200, 20);
-        cbHuman1.setFont(new Font("SansSerif", Font.BOLD, 14));
-        cbHuman1.setForeground(Color.white);
-        cbHuman1.setContentAreaFilled(false);
-        cbHuman1.addActionListener(this);
-        cbHuman1.setVisible(false);
-        add(cbHuman1);
-
+        human1CheckBox = new JCheckBox("Human?"); //check box
+        human1CheckBox.setBounds(420, 235, 200, 20);
+        human1CheckBox.setFont(new Font("SansSerif", Font.BOLD, 14));
+        human1CheckBox.setForeground(Color.white);
+        human1CheckBox.setContentAreaFilled(false);
+        human1CheckBox.addActionListener(this);
+        human1CheckBox.setVisible(false);
+        add(human1CheckBox);
 
         //background
-        bg = new JLabel(new ImageIcon("images/GO_BG.jpg"));
-        bg.setOpaque(true);
-        bg.setBounds(0, 0, 1366, 768);
-        add(bg);
+        backGroundLabel = new JLabel(new ImageIcon("images/GO_BG.jpg"));
+        backGroundLabel.setOpaque(true);
+        backGroundLabel.setBounds(0, 0, 1366, 768);
+        add(backGroundLabel);
     }
 
-    public void actionPerformed(ActionEvent e)
-    {
+    public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
+        remove(backGroundLabel);
 
-        remove(bg);	//tlo
-        if (first)
-        {
-            bg = new JLabel(new ImageIcon("images/GO_BG.jpg"));
-            bg.setOpaque(true);
-            bg.setBounds(0, 0, 1366, 768);
+        if (first) {
+            backGroundLabel = new JLabel(new ImageIcon("images/GO_BG.jpg"));
+            backGroundLabel.setOpaque(true);
+            backGroundLabel.setBounds(0, 0, 1366, 768);
+        } else {
+            backGroundLabel = new JLabel(new ImageIcon("images/GO_BG.jpg"));
+            backGroundLabel.setOpaque(true);
+            backGroundLabel.setBounds(0, 0, 1366, 768);
         }
-        else
-        {
-            bg = new JLabel(new ImageIcon("images/GO_BG.jpg"));
-            bg.setOpaque(true);
-            bg.setBounds(0, 0, 1366, 768);
-        }
-        add(bg);
-        first=!first;
-        repaint();	//to here
 
-        if (source == bBack)
-        {
+        add(backGroundLabel);
+        first = !first;
+        repaint();
+
+        if (source == bBack) {
             MenuGui menu = new MenuGui();
             menu.setLocation(this.getX(), this.getY());
             menu.setVisible(true);
             this.setVisible(false);
         }
 
-        if (source == cbNick)
-        {
-            if (cbNick.isSelected())
-            {
-                lNick.setVisible(true);
-                tPlayer0.setVisible(true);
-                tPlayer1.setVisible(true);
+        if (source == nickCheckBox) {
+            if (nickCheckBox.isSelected()) {
+                nickLabel.setVisible(true);
+                player0TextField.setVisible(true);
+                player1TextField.setVisible(true);
 
-                cbHuman0.setVisible(true);
-                cbHuman1.setVisible(true);
+                human0CheckBox.setVisible(true);
+                human1CheckBox.setVisible(true);
+            } else if (!nickCheckBox.isSelected()) {
+                nickLabel.setVisible(false);
+                player0TextField.setVisible(false);
+                player1TextField.setVisible(false);
+
+                human0CheckBox.setVisible(false);
+                human1CheckBox.setVisible(false);
             }
-            else if (!cbNick.isSelected())
-            {
-                lNick.setVisible(false);
-                tPlayer0.setVisible(false);
-                tPlayer1.setVisible(false);
-
-                cbHuman0.setVisible(false);
-                cbHuman1.setVisible(false);
-            }
-
         }
-        if(source == bgScreenResolution)
-        {
-            if(rbSmall.isSelected())
-            {
+
+        if (source == screenResolutionButtonGroup) {
+            if (smallRadioButton.isSelected()) {
                 setSize(1366, 768);
                 repaint();
-            }
-            else if(rbMedium.isSelected())
-            {
+            } else if (mediumRadioButton.isSelected()) {
                 setSize(800, 600);
                 repaint();
             }
         }
-
     }
 }
