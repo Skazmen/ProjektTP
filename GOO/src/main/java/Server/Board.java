@@ -12,6 +12,7 @@ class Board {
     private PrintWriter player1_out;
     private Scanner player2_in;
     private PrintWriter player2_out;
+    private String boardSize = null;
 
     private static Board instance;
 
@@ -29,21 +30,22 @@ class Board {
         return temp;
     }
 
-    void addClient(Scanner sc, PrintWriter pw) {
+    void addClient(Scanner sc, PrintWriter pw, String boardSize) {
         //add as first player
         if (player1_in == null || player1_out == null) {
             this.player1_in = sc;
             this.player1_out = pw;
-            listenForPlayer(Players.PLAYER_ONE, player1_in, player1_out);
-            //player one exists, add as second player
-        } else if (player2_in == null || player2_out == null) {
+            this.boardSize = boardSize;
+            listenForPlayer(Players.PLAYER_ONE, player1_in);
+            //player one exists, add as second player, only if board size is the same
+        } else if ( (player2_in == null || player2_out == null) && this.boardSize.equals(boardSize) ){
             this.player2_in = sc;
             this.player2_out = pw;
-            listenForPlayer(Players.PLAYER_TWO, player2_in, player2_out);
+            listenForPlayer(Players.PLAYER_TWO, player2_in);
         }
     }
 
-    private void listenForPlayer(final Players player, final Scanner scanner, final PrintWriter printWriter) {
+    private void listenForPlayer(final Players player, final Scanner scanner) {
         new Thread(new Runnable() {
             boolean listen = true;
 
@@ -60,22 +62,29 @@ class Board {
 							-> i teraz w moemncie gdy jesteś wk którym kolwiek tych casów, to zmieniasz textkst tej labalki w TYM miejscu
 							dodatkowo ustawiając oapcity na 1 -> żeby byąą widoczna. Tym smamym masz zablokowane akcje uzytkownika oraz nie wyświetlone labelki
 							 */
-                            System.out.println("client " + player + " is waiting for another player");
-                            sendToClient(player, MessagesServer.SET_COLOR_BLACK);
-
+                            System.out.println("client " + player + " is waiting for another player on board " + boardSize);
+                            if(player1_in != null && player2_in != null){
+                                if(Math.random() < 0.5) {
+                                    sendToClient(Players.PLAYER_ONE, MessagesServer.SET_COLOR_BLACK);
+                                    sendToClient(Players.PLAYER_TWO, MessagesServer.SET_COLOR_WHITE);
+                                } else {
+                                    sendToClient(Players.PLAYER_ONE, MessagesServer.SET_COLOR_WHITE);
+                                    sendToClient(Players.PLAYER_TWO, MessagesServer.SET_COLOR_BLACK);
+                                }
+                            }
                             break;
                         case MADE_MOVE:
-                            System.out.println("client " + player + " made move");
-                            sendToClient(player, MessagesServer.WRONG_MOVE);
-                            sendToClient(player, MessagesServer.UPDATE_BOARD);
+//                            System.out.println("client " + player + " made move");
+//                            sendToClient(player, MessagesServer.WRONG_MOVE);
+//                            sendToClient(player, MessagesServer.UPDATE_BOARD);
 
                             break;
                         case GIVE_UP_MOVE:
-                            System.out.println("client " + player + " decided not to move this time");
+//                            System.out.println("client " + player + " decided not to move this time");
                             break;
                         case SURRENDER:
-                            System.out.println("client " + player + " surrendered the game");
-                            sendToClient(Players.BOTH, MessagesServer.END_GAME);
+//                            System.out.println("client " + player + " surrendered the game");
+//                            sendToClient(Players.BOTH, MessagesServer.END_GAME);
 
                             break;
                         case CLOSE:

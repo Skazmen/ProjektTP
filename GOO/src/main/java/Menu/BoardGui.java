@@ -26,10 +26,14 @@ public class BoardGui extends JFrame implements ActionListener {
     private JButton surrenderButton;
     private JLabel backGroundLabel, stateLabel;
     private boolean first = true;
+    private String boardSize;
 
     BoardGui() {
         //połączenie z serwerem
-        connectToServer();
+        //TODO wysłac rozmiar planszy - String "9x9" "13x13" albo "19x19"
+        // tymczasowo "9x9"
+        boardSize = "9x9";
+        connectToServer(boardSize);
 
         //wysłanie wiadomości
         sendToServer(MessagesClient.WAITING_FOR_GAME);
@@ -106,57 +110,35 @@ public class BoardGui extends JFrame implements ActionListener {
         }
     }
 
-    private void connectToServer() { //pokaz mi miejsce  wktórym dostjaesz info z backendu że np gracz ywkonał ruch, albo w ktorym miejscu to sie wyswie
+    private void connectToServer(final String boardSize) { //pokaz mi miejsce  wktórym dostjaesz info z backendu że np gracz ywkonał ruch, albo w ktorym miejscu to sie wyswie
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try (Socket socket = new Socket(InetAddress.getLocalHost(), 59898)) {
                     in = new Scanner(socket.getInputStream());
                     out = new PrintWriter(socket.getOutputStream(), true);
+                    out.println(boardSize);
                     sync.countDown(); //sygnalize 'out' is initialized
 
                     while (true) {
                         MessagesServer serverAnswer = MessagesServer.valueOf(in.nextLine());
                         switch (serverAnswer) {
                             case SET_COLOR_BLACK:
-                                System.out.println("Your color is Black");
-								stateLabel.setText("Your color is Black");
-								stateLabel.setOpaque(true);
-								//todo -> nie pamiętam jak, zrób sleep na 4s i wtedy odekmentuj poniższą linię
-								//stateLabel.setOpaque(false);
-
+                                notification("Your color is Black", 4000);
                                 break;
                             case SET_COLOR_WHITE:
-								stateLabel.setText("Your color is White");
-								stateLabel.setOpaque(true);
-								//todo -> nie pamiętam jak, zrób sleep na 4s i wtedy odekmentuj poniższą linię
-								//stateLabel.setOpaque(false);
-
-                                System.out.println("Your color is White");
+                                notification("Your color is White", 4000);
                                 break;
                             case WRONG_MOVE:
-                            	stateLabel.setText("The move you tride to make is not allowed");
-                            	stateLabel.setOpaque(true);
-                            	//todo -> nie pamiętam jak, zrób sleep na 4s i wtedy odekmentuj poniższą linię
-								//stateLabel.setOpaque(false);
-
-                                System.out.println("The move you tride to make is not allowed");
+                                notification("The move you tried to make is not allowed", 2000);
                                 break;
                             case UPDATE_BOARD:
-								stateLabel.setText("Your move was good, here is updated board");
-								stateLabel.setOpaque(true);
-								//todo -> nie pamiętam jak, zrób sleep na 4s i wtedy odekmentuj poniższą linię
-								//stateLabel.setOpaque(false);
-
-                                System.out.println("Your move was good, here is updated board");
+                                notification("Your move was good, here is updated board", 1000);
+                                //TODO zczytac nową planszę i ją narysować
                                 break;
                             case END_GAME:
-								stateLabel.setText("The game has ended and PlayerX won");
-								stateLabel.setOpaque(true);
-								//todo -> nie pamiętam jak, zrób sleep na 4s i wtedy odekmentuj poniższą linię
-								//stateLabel.setOpaque(false);
-
-                                System.out.println("The game has ended and PlayerX won");
+                                notification("The game has ended and PlayerX won", 15000);
+								//TODO zakonczyc grę
                                 break;
                         }
                     }
@@ -178,6 +160,23 @@ public class BoardGui extends JFrame implements ActionListener {
                     out.println(message.toString());
                 } catch (NullPointerException | InterruptedException e) {
                     System.out.println("Didn't connect to server yet");
+                }
+            }
+        }).start();
+    }
+
+    private void notification(final String info, final int time){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    System.out.println(info);
+                    stateLabel.setText(info);
+                    stateLabel.setOpaque(true);
+                    Thread.sleep(time);
+                    stateLabel.setOpaque(false);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }).start();

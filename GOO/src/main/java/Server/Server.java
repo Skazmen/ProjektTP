@@ -16,7 +16,10 @@ public class Server {
 				Socket socket = listener.accept();
 				Scanner in = new  Scanner(socket.getInputStream());
 				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-				board.addClient(in,out);
+				String boardSize = in.nextLine();
+				if(boardSize != null) {
+					board.addClient(in, out, boardSize);
+				}
 			}
 		} catch (IOException e) {
 			System.out.println("Cannot run server on socket " + serverPort);
