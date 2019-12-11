@@ -83,7 +83,7 @@ public class BoardGui extends JFrame implements ActionListener {
         add(backGroundLabel);
 
 
-        */stateLabel = new JLabel("INFO", SwingConstants.CENTER);
+        /*stateLabel = new JLabel("INFO", SwingConstants.CENTER);
         stateLabel.setSize(1366, 768);
         stateLabel.setFont(new Font("Sans-Serif", Font.BOLD, 30));
         stateLabel.setForeground(Color.red);
