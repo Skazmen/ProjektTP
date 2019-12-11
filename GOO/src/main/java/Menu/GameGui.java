@@ -1,5 +1,6 @@
 package Menu;
 
+import Server.Enums.Boards;
 import Server.Enums.Players;
 
 import java.awt.Color;
@@ -20,7 +21,7 @@ public class GameGui extends JFrame implements ActionListener {
     private boolean first = true;
 
     GameGui() {
-        //todo wybranie nazwy gracza, romziaru planszy i czy grać z botem czy człowiekiem
+        //todo wybranie nazwy gracza
         //todo After choose option in ComboBoc refresh page - sizeOf(nicklist) = N;
         setSize(1366, 768);
         setTitle("Go game - New Game");
@@ -167,7 +168,7 @@ public class GameGui extends JFrame implements ActionListener {
             }
         }
 
-        //todo trzeba zrobic dla kazdego rozmiaru
+        //todo trzeba to przemyslec
         if (source == startButton) {
             if (smallBoardRadioButton.isSelected()) {
                 BoardGui playingBoard = new BoardGui();
@@ -194,6 +195,18 @@ public class GameGui extends JFrame implements ActionListener {
                 Settings.players = Players.get(0);
             } else { //set plaeyrs with second player
                 Settings.players = Players.get(2);
+            }
+        }
+
+
+        if (source == gamePanelButtonGroup) {
+
+            if (normalBoardRadioButton.isSelected()) {
+                Settings.boards = Boards.get(2);
+            } else if (mediumBoardRadioButton.isSelected()) {
+                Settings.boards = Boards.get(1);
+            } else {
+                Settings.boards = Boards.get(0);
             }
         }
     }

@@ -1,11 +1,13 @@
 package Menu;
 
+import Game.Start;
 import Server.Enums.MessagesClient;
 import Server.Enums.MessagesServer;
 
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -16,24 +18,29 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
-import java.awt.Color;
-import java.awt.Font;
 
 public class BoardGui extends JFrame implements ActionListener {
     private Scanner in;
     private PrintWriter out;
     private CountDownLatch sync = new CountDownLatch(1); //for 'sendToServer' to wait for 'out' to be inicjalized;
-    private JButton surrenderButton;
+    private JButton surrenderButton, goButton;
     private JLabel backGroundLabel, stateLabel;
     private boolean first = true;
     private String boardSize;
+    public static int SIZE = 9;
+    int test = 0;
 
     BoardGui() {
         //połączenie z serwerem
         //TODO wysłac rozmiar planszy - String "9x9" "13x13" albo "19x19"
         // tymczasowo "9x9"
         boardSize = "9x9";
+
+        if (boardSize == "9x9") {
+            SIZE = 9;
+        }
         connectToServer(boardSize);
+        this.setBackground(Color.ORANGE);
 
         //wysłanie wiadomości
         sendToServer(MessagesClient.WAITING_FOR_GAME);
@@ -42,18 +49,29 @@ public class BoardGui extends JFrame implements ActionListener {
         sendToServer(MessagesClient.SURRENDER);
 
         setSize(1366, 768);
-        setTitle("Go game - Loading");
+        setTitle("Go game");
         setLayout(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
         //Back button
-        surrenderButton = new JButton("leave");
+        goButton = new JButton("go GO");
+        goButton.setBounds(1180, 560, 180, 30);
+        add(goButton);
+        goButton.setForeground(Color.white);
+        goButton.setContentAreaFilled(false);
+        goButton.setToolTipText("Click here to leave session");
+        goButton.setFont(new Font("SansSerif", Font.BOLD, 20));
+        goButton.addActionListener(this);
+        setResizable(false);
+
+
+        surrenderButton = new JButton("Leave");
         surrenderButton.setBounds(1180, 660, 180, 30);
         add(surrenderButton);
         surrenderButton.setForeground(Color.white);
         surrenderButton.setContentAreaFilled(false);
-        surrenderButton.setToolTipText("Click here to leave session");
+        surrenderButton.setToolTipText("Click here to go session");
         surrenderButton.setFont(new Font("SansSerif", Font.BOLD, 20));
         surrenderButton.addActionListener(this);
         setResizable(false);
@@ -64,10 +82,12 @@ public class BoardGui extends JFrame implements ActionListener {
         backGroundLabel.setBounds(0, 0, 1366, 768);
         add(backGroundLabel);
 
+
         stateLabel = new JLabel("INFO", SwingConstants.CENTER);
         stateLabel.setSize(1366, 768);
         stateLabel.setFont(new Font("Sans-Serif", Font.BOLD, 30));
         stateLabel.setForeground(Color.red);
+
         add(stateLabel);
 
         setComponentZOrder(surrenderButton, 0);
@@ -90,11 +110,11 @@ public class BoardGui extends JFrame implements ActionListener {
         remove(backGroundLabel);
 
         if (first) {
-            backGroundLabel = new JLabel(new ImageIcon("images/loading.jpg"));
+            backGroundLabel = new JLabel(new ImageIcon("images/tlo.jpg"));
             backGroundLabel.setOpaque(true);
             backGroundLabel.setBounds(0, 0, 1366, 768);
         } else {
-            backGroundLabel = new JLabel(new ImageIcon("images/loading.jpg"));
+            backGroundLabel = new JLabel(new ImageIcon("images/tlo.jpg"));
             backGroundLabel.setOpaque(true);
             backGroundLabel.setBounds(0, 0, 1366, 768);
         }
@@ -102,6 +122,11 @@ public class BoardGui extends JFrame implements ActionListener {
         add(backGroundLabel);
         first = !first;
         repaint();
+
+        if (source == goButton) {
+            new Start().init();
+            this.setVisible(false);
+        }
 
         if (source == surrenderButton) {
             sendToServer(MessagesClient.SURRENDER);
@@ -112,7 +137,7 @@ public class BoardGui extends JFrame implements ActionListener {
         }
     }
 
-    private void connectToServer(final String boardSize) { //pokaz mi miejsce  wktórym dostjaesz info z backendu że np gracz ywkonał ruch, albo w ktorym miejscu to sie wyswie
+    private void connectToServer(final String boardSize) {
         new Thread(new Runnable() {
             @Override
             public void run() {

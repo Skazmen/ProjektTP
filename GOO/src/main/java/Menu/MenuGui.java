@@ -10,7 +10,7 @@ public class MenuGui extends JFrame implements ActionListener {
     private JLabel backGroundLabel;
     private boolean first = true;
 
-    MenuGui() {
+    public MenuGui() {
         setSize(1366, 768);
         setTitle("GO game");
         setLayout(null);
