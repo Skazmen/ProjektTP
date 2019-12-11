@@ -18,8 +18,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
-import java.awt.Color;
-import java.awt.Font;
 
 public class BoardGui extends JFrame implements ActionListener {
     private Scanner in;
@@ -57,8 +55,8 @@ public class BoardGui extends JFrame implements ActionListener {
         setResizable(false);
 
         //Back button
-        goButton = new JButton("leave");
-        goButton.setBounds(1180, 660, 180, 30);
+        goButton = new JButton("go GO");
+        goButton.setBounds(1180, 560, 180, 30);
         add(goButton);
         goButton.setForeground(Color.white);
         goButton.setContentAreaFilled(false);
@@ -68,8 +66,8 @@ public class BoardGui extends JFrame implements ActionListener {
         setResizable(false);
 
 
-        surrenderButton = new JButton("GO GO");
-        surrenderButton.setBounds(1180, 560, 180, 30);
+        surrenderButton = new JButton("Leave");
+        surrenderButton.setBounds(1180, 660, 180, 30);
         add(surrenderButton);
         surrenderButton.setForeground(Color.white);
         surrenderButton.setContentAreaFilled(false);
@@ -105,21 +103,26 @@ public class BoardGui extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
-        remove(backGroundLabel1);
+        remove(backGroundLabel);
 
         if (first) {
-            backGroundLabel1 = new JLabel(new ImageIcon("images/tlo.jpg"));
-            backGroundLabel1.setOpaque(true);
-            backGroundLabel1.setBounds(0, 0, 1366, 768);
+            backGroundLabel = new JLabel(new ImageIcon("images/tlo.jpg"));
+            backGroundLabel.setOpaque(true);
+            backGroundLabel.setBounds(0, 0, 1366, 768);
         } else {
-            backGroundLabel1 = new JLabel(new ImageIcon("images/tlo.jpg"));
-            backGroundLabel1.setOpaque(true);
-            backGroundLabel1.setBounds(0, 0, 1366, 768);
+            backGroundLabel = new JLabel(new ImageIcon("images/tlo.jpg"));
+            backGroundLabel.setOpaque(true);
+            backGroundLabel.setBounds(0, 0, 1366, 768);
         }
 
-        add(backGroundLabel1);
+        add(backGroundLabel);
         first = !first;
         repaint();
+
+        if (source == goButton) {
+            new Start().init();
+            this.setVisible(false);
+        }
 
         if (source == surrenderButton) {
             sendToServer(MessagesClient.SURRENDER);
@@ -130,7 +133,7 @@ public class BoardGui extends JFrame implements ActionListener {
         }
     }
 
-    private void connectToServer(final String boardSize) { //pokaz mi miejsce  wktórym dostjaesz info z backendu że np gracz ywkonał ruch, albo w ktorym miejscu to sie wyswie
+    private void connectToServer(final String boardSize) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -165,8 +168,6 @@ public class BoardGui extends JFrame implements ActionListener {
                 } catch (ConnectException | UnknownHostException e) {
                     System.out.println("Cannot connect to  server - run server first");
                 } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
