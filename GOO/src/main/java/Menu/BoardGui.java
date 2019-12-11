@@ -83,7 +83,7 @@ public class BoardGui extends JFrame implements ActionListener {
         add(backGroundLabel);
 
 
-        stateLabel = new JLabel("INFO", SwingConstants.CENTER);
+        */stateLabel = new JLabel("INFO", SwingConstants.CENTER);
         stateLabel.setSize(1366, 768);
         stateLabel.setFont(new Font("Sans-Serif", Font.BOLD, 30));
         stateLabel.setForeground(Color.red);
@@ -93,6 +93,7 @@ public class BoardGui extends JFrame implements ActionListener {
         setComponentZOrder(surrenderButton, 0);
 		setComponentZOrder(stateLabel, 1);
 		setComponentZOrder(backGroundLabel, 2);
+	    */
 
         //powiadomienie serwera przed zamknieciem
         this.addWindowListener(new WindowAdapter() {
