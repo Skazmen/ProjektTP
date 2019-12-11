@@ -82,13 +82,17 @@ public class BoardGui extends JFrame implements ActionListener {
         backGroundLabel.setBounds(0, 0, 1366, 768);
         add(backGroundLabel);
 
-        stateLabel = new JLabel();
-        stateLabel.setBounds(200, 30, 500, 500);
-        stateLabel.setOpaque(false);
-        stateLabel.setHorizontalAlignment(JLabel.CENTER);
+
+        stateLabel = new JLabel("INFO", SwingConstants.CENTER);
+        stateLabel.setSize(1366, 768);
+        stateLabel.setFont(new Font("Sans-Serif", Font.BOLD, 30));
+        stateLabel.setForeground(Color.red);
+
         add(stateLabel);
 
-        //todo zaleznie od state odpowiednio wszytsko narysować
+        setComponentZOrder(surrenderButton, 0);
+		setComponentZOrder(stateLabel, 1);
+		setComponentZOrder(backGroundLabel, 2);
 
         //powiadomienie serwera przed zamknieciem
         this.addWindowListener(new WindowAdapter() {
@@ -195,9 +199,29 @@ public class BoardGui extends JFrame implements ActionListener {
                 try {
                     System.out.println(info);
                     stateLabel.setText(info);
-                    stateLabel.setOpaque(true);
-                    Thread.sleep(time);
-                    stateLabel.setOpaque(false);
+                    //TODO ustawic label zeby był na wieszchu i wrzystko zasłaniał, a potem się schował do tyłu
+                    // https://stackoverflow.com/questions/4229638/z-order-on-java-swing-components/4229661
+                    // setOpacity nie działa bo potem nie chce znikać owiadomienie,
+                    // próbowałem setComponentZOrder działa jak na razie całkiem ładnie ale nwm czy zasłania wszystko i zapobiega klikaniu,
+                    // ewentualnie możesz spróbować z JLayeredPane, tak jak w linku powyżej
+
+//					setComponentZOrder(surrenderButton, 0);
+//					setComponentZOrder(stateLabel, 1);
+//					setComponentZOrder(backGroundLabel, 2);
+//                    Thread.sleep(time);
+//					setComponentZOrder(surrenderButton, 0);
+//					setComponentZOrder(backGroundLabel, 1);
+//					setComponentZOrder(stateLabel, 2);
+
+					setComponentZOrder(stateLabel, 0);
+					setComponentZOrder(surrenderButton, 1);
+					setComponentZOrder(backGroundLabel, 2);
+					Thread.sleep(time);
+					setComponentZOrder(surrenderButton, 0);
+					setComponentZOrder(backGroundLabel, 1);
+					setComponentZOrder(stateLabel, 2);
+
+					stateLabel.setText("end");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

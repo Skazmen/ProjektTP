@@ -75,7 +75,7 @@ class Board {
                             // stops listening to client when he closes his window
                             listen = false;
                             System.out.println("Client " + player + " disconnected");
-
+                            //TODO przypadek gdy pierwszy sie rozlaczy zanim drugi sie polaczy
                             break;
                     }
                 }
