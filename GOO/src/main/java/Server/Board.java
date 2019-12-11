@@ -29,7 +29,7 @@ class Board {
         return temp;
     }
 
-    void addClient(Scanner sc, PrintWriter pw) {
+    void addClient(Scanner sc, PrintWriter pw, String boardSize) {
         //add as first player
         if (player1_in == null || player1_out == null) {
             this.player1_in = sc;
