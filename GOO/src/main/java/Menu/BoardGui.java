@@ -23,13 +23,17 @@ public class BoardGui extends JFrame implements ActionListener {
     private Scanner in;
     private PrintWriter out;
     private CountDownLatch sync = new CountDownLatch(1); //for 'sendToServer' to wait for 'out' to be inicjalized;
-    private JButton surrenderButton, giveUpTurn, confrimMove;
-    private JLabel backGroundLabel, stateLabel, backGroundLabel1;
+    private JButton surrenderButton;
+    private JLabel backGroundLabel, stateLabel;
     private boolean first = true;
+    private String boardSize;
 
     BoardGui() {
         //połączenie z serwerem
-        connectToServer();
+        //TODO wysłac rozmiar planszy - String "9x9" "13x13" albo "19x19"
+        // tymczasowo "9x9"
+        boardSize = "9x9";
+        connectToServer(boardSize);
 
         //wysłanie wiadomości
         sendToServer(MessagesClient.WAITING_FOR_GAME);
@@ -38,46 +42,30 @@ public class BoardGui extends JFrame implements ActionListener {
         sendToServer(MessagesClient.SURRENDER);
 
         setSize(1366, 768);
-        setTitle("Go game");
+        setTitle("Go game - Loading");
         setLayout(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
         //Back button
-        surrenderButton = new JButton("surrender");
+        surrenderButton = new JButton("leave");
         surrenderButton.setBounds(1180, 660, 180, 30);
         add(surrenderButton);
         surrenderButton.setForeground(Color.white);
         surrenderButton.setContentAreaFilled(false);
-        surrenderButton.setToolTipText("Click here to surrender session");
+        surrenderButton.setToolTipText("Click here to leave session");
         surrenderButton.setFont(new Font("SansSerif", Font.BOLD, 20));
         surrenderButton.addActionListener(this);
+        setResizable(false);
 
-        giveUpTurn = new JButton("Give up turn");
-        giveUpTurn.setBounds(950, 400, 200, 30);
-        add(giveUpTurn);
-        giveUpTurn.setForeground(Color.white);
-        giveUpTurn.setContentAreaFilled(false);
-        giveUpTurn.setToolTipText("Click here to give up move");
-        giveUpTurn.setFont(new Font("SansSerif", Font.BOLD, 20));
-        giveUpTurn.addActionListener(this);
-
-        confrimMove = new JButton("Confrim move");
-        confrimMove.setBounds(950, 300, 200, 30);
-        add(confrimMove);
-        confrimMove.setForeground(Color.white);
-        confrimMove.setContentAreaFilled(false);
-        confrimMove.setToolTipText("Click here to confrim move");
-        confrimMove.setFont(new Font("SansSerif", Font.BOLD, 20));
-        confrimMove.addActionListener(this);
-
-        backGroundLabel1 = new JLabel(new ImageIcon("images/tlo.jpg"));
-        backGroundLabel1.setOpaque(true);
-        backGroundLabel1.setBounds(0, 0, 1366, 768);
-        add(backGroundLabel1);
+        //background
+        backGroundLabel = new JLabel(new ImageIcon("images/loading.jpg"));
+        backGroundLabel.setOpaque(true);
+        backGroundLabel.setBounds(0, 0, 1366, 768);
+        add(backGroundLabel);
 
         stateLabel = new JLabel();
-        stateLabel.setBounds(200, 30, 500, 500);
+        stateLabel.setBounds(0, 0, 1366, 768);
         stateLabel.setOpaque(false);
         stateLabel.setHorizontalAlignment(JLabel.CENTER);
         add(stateLabel);
@@ -97,19 +85,19 @@ public class BoardGui extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
-        remove(backGroundLabel1);
+        remove(backGroundLabel);
 
         if (first) {
-            backGroundLabel1 = new JLabel(new ImageIcon("images/tlo.jpg"));
-            backGroundLabel1.setOpaque(true);
-            backGroundLabel1.setBounds(0, 0, 1366, 768);
+            backGroundLabel = new JLabel(new ImageIcon("images/loading.jpg"));
+            backGroundLabel.setOpaque(true);
+            backGroundLabel.setBounds(0, 0, 1366, 768);
         } else {
-            backGroundLabel1 = new JLabel(new ImageIcon("images/tlo.jpg"));
-            backGroundLabel1.setOpaque(true);
-            backGroundLabel1.setBounds(0, 0, 1366, 768);
+            backGroundLabel = new JLabel(new ImageIcon("images/loading.jpg"));
+            backGroundLabel.setOpaque(true);
+            backGroundLabel.setBounds(0, 0, 1366, 768);
         }
 
-        add(backGroundLabel1);
+        add(backGroundLabel);
         first = !first;
         repaint();
 
@@ -120,77 +108,43 @@ public class BoardGui extends JFrame implements ActionListener {
             menu.setVisible(true);
             this.setVisible(false);
         }
-
-        if (source == giveUpTurn) {
-            sendToServer(MessagesClient.GIVE_UP_MOVE);
-        }
-
-        if (source == confrimMove) {
-            sendToServer(MessagesClient.MADE_MOVE);
-        }
-
-
     }
 
-    private void connectToServer() {
+    private void connectToServer(final String boardSize) { //pokaz mi miejsce  wktórym dostjaesz info z backendu że np gracz ywkonał ruch, albo w ktorym miejscu to sie wyswie
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try (Socket socket = new Socket(InetAddress.getLocalHost(), 59898)) {
                     in = new Scanner(socket.getInputStream());
                     out = new PrintWriter(socket.getOutputStream(), true);
+                    out.println(boardSize);
                     sync.countDown(); //sygnalize 'out' is initialized
 
                     while (true) {
                         MessagesServer serverAnswer = MessagesServer.valueOf(in.nextLine());
                         switch (serverAnswer) {
                             case SET_COLOR_BLACK:
-                                System.out.println("Your color is Black");
-								stateLabel.setText("Your color is Black");
-								stateLabel.setOpaque(true);
-                                Thread.sleep(4000);
-								stateLabel.setOpaque(false);
-
+                                notification("Your color is Black", 4000);
                                 break;
                             case SET_COLOR_WHITE:
-								stateLabel.setText("Your color is White");
-								stateLabel.setOpaque(true);
-                                Thread.sleep(4000);
-								stateLabel.setOpaque(false);
-
-                                System.out.println("Your color is White");
+                                notification("Your color is White", 4000);
                                 break;
                             case WRONG_MOVE:
-                            	stateLabel.setText("The move you tride to make is not allowed");
-                            	stateLabel.setOpaque(true);
-                                Thread.sleep(4000);
-								stateLabel.setOpaque(false);
-
-                                System.out.println("The move you tride to make is not allowed");
+                                notification("The move you tried to make is not allowed", 2000);
                                 break;
                             case UPDATE_BOARD:
-								stateLabel.setText("Your move was good, here is updated board");
-								stateLabel.setOpaque(true);
-                                Thread.sleep(4000);
-								stateLabel.setOpaque(false);
-
-                                System.out.println("Your move was good, here is updated board");
+                                notification("Your move was good, here is updated board", 1000);
+                                //TODO zczytac nową planszę i ją narysować
                                 break;
                             case END_GAME:
-								stateLabel.setText("The game has ended and PlayerX won");
-								stateLabel.setOpaque(true);
-                                Thread.sleep(4000);
-								stateLabel.setOpaque(false);
-
-                                System.out.println("The game has ended and PlayerX won");
+                                notification("The game has ended and PlayerX won", 15000);
+								//TODO zakonczyc grę
                                 break;
                         }
                     }
                 } catch (ConnectException | UnknownHostException e) {
                     System.out.println("Cannot connect to  server - run server first");
                 } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -206,6 +160,23 @@ public class BoardGui extends JFrame implements ActionListener {
                     out.println(message.toString());
                 } catch (NullPointerException | InterruptedException e) {
                     System.out.println("Didn't connect to server yet");
+                }
+            }
+        }).start();
+    }
+
+    private void notification(final String info, final int time){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    System.out.println(info);
+                    stateLabel.setText(info);
+                    stateLabel.setOpaque(true);
+                    Thread.sleep(time);
+                    stateLabel.setOpaque(false);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }).start();
