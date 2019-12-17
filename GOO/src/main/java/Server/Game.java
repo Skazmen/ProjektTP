@@ -41,7 +41,7 @@ public class Game {
     }
     void updateBoard(Player p, int x, int y){
         //TODO sprawdzenie czy cos znika po polozeniu tego
-        addStone(x,y,p);
+        //addStone(x,y,p);
         grid[x][y].setPlayer(p);
     }
 
