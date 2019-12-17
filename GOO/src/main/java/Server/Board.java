@@ -1,17 +1,20 @@
 package Server;
 
+import Menu.UserSettings;
 import Server.Enums.MessagesClient;
 import Server.Enums.MessagesServer;
 import Server.Enums.Players;
 
+import java.awt.*;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
 class Board {
-    private Scanner player1_in;
-    private PrintWriter player1_out;
-    private Scanner player2_in;
-    private PrintWriter player2_out;
+    private Player player1;
+    private Player player2;
+    private int size;
+    private boolean multiplayer;
+    private Game game;
 
     private static Board instance;
 
@@ -29,23 +32,29 @@ class Board {
         return temp;
     }
 
-    void addClient(Scanner sc, PrintWriter pw, String boardSize) {
-        //add as first player
-        if (player1_in == null || player1_out == null) {
-            this.player1_in = sc;
-            this.player1_out = pw;
-            listenForPlayer(Players.PLAYER_ONE, player1_in, player1_out);
-            //player one exists, add as second player
-        } else if (player2_in == null || player2_out == null) {
-            this.player2_in = sc;
-            this.player2_out = pw;
-            listenForPlayer(Players.PLAYER_TWO, player2_in, player2_out);
+    void addClient(Scanner sc, PrintWriter pw, UserSettings uSet) {
+        // add first player
+        if (player1 == null){
+            player1 = new Player(uSet.getNick());
+            player1.setInputStream(sc);
+            player1.setOutputStream(pw);
+            this.size = uSet.getSize();
+            this.multiplayer = (uSet.getPlayersCount() == 2);
+            listenForPlayer(player1);
+
+        // add second player if doesnt already existst and both chosen multiplayer mode and same board size
+        } else if (multiplayer && player2==null && uSet.getPlayersCount()==2 && uSet.getSize()==size){
+            player2 = new Player(uSet.getNick());
+            player2.setInputStream(sc);
+            player2.setOutputStream(pw);
+            listenForPlayer(player2);
         }
     }
 
-    private void listenForPlayer(final Players player, final Scanner scanner, final PrintWriter printWriter) {
+    private void listenForPlayer(final Player player) {
         new Thread(new Runnable() {
             boolean listen = true;
+            Scanner scanner = player.getInputStream();
 
             @Override
             public void run() {
@@ -53,28 +62,28 @@ class Board {
                     MessagesClient clientMessage = MessagesClient.valueOf(scanner.nextLine());
                     switch (clientMessage) {
                         case WAITING_FOR_GAME:
-                            System.out.println("client " + player + " is waiting for another player");
-                            sendToClient(player, MessagesServer.SET_COLOR_BLACK);
-
+                            System.out.println(player.getNickname() + " is waiting for another player");
+                            checkGameCreation();
                             break;
                         case MADE_MOVE:
-                            System.out.println("client " + player + " made move");
+                            System.out.println(player.getNickname() + " made move");
                             sendToClient(player, MessagesServer.WRONG_MOVE);
                             sendToClient(player, MessagesServer.UPDATE_BOARD);
 
                             break;
                         case GIVE_UP_MOVE:
-                            System.out.println("client " + player + " decided not to move this time");
+                            System.out.println(player.getNickname() + " decided not to move this time");
                             break;
                         case SURRENDER:
-                            System.out.println("client " + player + " surrendered the game");
-                            sendToClient(Players.BOTH, MessagesServer.END_GAME);
+                            System.out.println(player.getNickname() + " surrendered the game");
+                            sendToClient(player1, MessagesServer.END_GAME);
+                            sendToClient(player2, MessagesServer.END_GAME);
 
                             break;
                         case CLOSE:
                             // stops listening to client when he closes his window
                             listen = false;
-                            System.out.println("Client " + player + " disconnected");
+                            System.out.println(player.getNickname() + " disconnected");
                             //TODO przypadek gdy pierwszy sie rozlaczy zanim drugi sie polaczy
                             break;
                     }
@@ -83,27 +92,28 @@ class Board {
         }).start();
     }
 
-    private void sendToClient(final Players player, final MessagesServer message) {
-        switch (player) {
-            case PLAYER_ONE:
-                if (player1_out != null) {
-                    player1_out.println(message);
-                }
-
-                break;
-            case PLAYER_TWO:
-                if (player2_out != null) {
-                    player2_out.println(message);
-                }
-
-                break;
-            case BOTH:
-                if (player1_out != null && player2_out != null) {
-                    player1_out.println(message);
-                    player2_out.println(message);
-                }
-
-                break;
+    private void checkGameCreation() {
+        if(player1 != null && player2 != null){
+            if(Math.random() >  0.5){
+                sendToClient(player1, MessagesServer.SET_COLOR_BLACK);
+                sendToClient(player2, MessagesServer.SET_COLOR_WHITE);
+                player1.setColor(Color.BLACK);
+                player2.setColor(Color.WHITE);
+            } else {
+                sendToClient(player1, MessagesServer.SET_COLOR_WHITE);
+                sendToClient(player2, MessagesServer.SET_COLOR_BLACK);
+                player1.setColor(Color.WHITE);
+                player2.setColor(Color.BLACK);
+            }
+            game = new Game(size);
         }
+    }
+
+
+    private void sendToClient(final Player player, final MessagesServer message) {
+        if(player.getOutputStream() != null){
+            player.getOutputStream().println(message);
+        }
+        else System.out.println("error");
     }
 }

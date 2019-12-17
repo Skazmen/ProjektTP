@@ -1,5 +1,8 @@
 package Server;
 
+import Menu.UserSettings;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -16,9 +19,11 @@ public class Server {
 				Socket socket = listener.accept();
 				Scanner in = new  Scanner(socket.getInputStream());
 				PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-				String boardSize = in.nextLine();
-				if(boardSize != null) {
-					board.addClient(in, out, boardSize);
+				String settings = in.nextLine();
+				if(settings != null) {
+					ObjectMapper objectMapper = new ObjectMapper();
+					UserSettings uSet = objectMapper.readValue(settings, UserSettings.class);
+					board.addClient(in, out, uSet);
 				}
 			}
 		} catch (IOException e) {

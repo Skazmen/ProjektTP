@@ -3,6 +3,7 @@ package Menu;
 import Game.Start;
 import Server.Enums.MessagesClient;
 import Server.Enums.MessagesServer;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,27 +27,18 @@ public class BoardGui extends JFrame implements ActionListener {
     private JButton surrenderButton, goButton;
     private JLabel backGroundLabel, stateLabel;
     private boolean first = true;
-    private String boardSize;
-    public static int SIZE = 9;
     int test = 0;
 
-    BoardGui() {
+    BoardGui(UserSettings uSet) {
         //połączenie z serwerem
-        //TODO wysłac rozmiar planszy - String "9x9" "13x13" albo "19x19"
-        // tymczasowo "9x9"
-        boardSize = "9x9";
-
-        if (boardSize == "9x9") {
-            SIZE = 9;
-        }
-        connectToServer(boardSize);
+        connectToServer(uSet);
         this.setBackground(Color.ORANGE);
 
         //wysłanie wiadomości
         sendToServer(MessagesClient.WAITING_FOR_GAME);
-        sendToServer(MessagesClient.MADE_MOVE);
-        sendToServer(MessagesClient.GIVE_UP_MOVE);
-        sendToServer(MessagesClient.SURRENDER);
+//        sendToServer(MessagesClient.MADE_MOVE);
+//        sendToServer(MessagesClient.GIVE_UP_MOVE);
+//        sendToServer(MessagesClient.SURRENDER);
 
         setSize(1366, 768);
         setTitle("Go game");
@@ -55,7 +47,7 @@ public class BoardGui extends JFrame implements ActionListener {
         setResizable(false);
 
         //Back button
-        goButton = new JButton("go GO");
+        goButton = new JButton("Skip Move");
         goButton.setBounds(1180, 560, 180, 30);
         add(goButton);
         goButton.setForeground(Color.white);
@@ -66,7 +58,7 @@ public class BoardGui extends JFrame implements ActionListener {
         setResizable(false);
 
 
-        surrenderButton = new JButton("Leave");
+        surrenderButton = new JButton("Surrender");
         surrenderButton.setBounds(1180, 660, 180, 30);
         add(surrenderButton);
         surrenderButton.setForeground(Color.white);
@@ -108,21 +100,6 @@ public class BoardGui extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
-        remove(backGroundLabel);
-
-        if (first) {
-            backGroundLabel = new JLabel(new ImageIcon("images/tlo.jpg"));
-            backGroundLabel.setOpaque(true);
-            backGroundLabel.setBounds(0, 0, 1366, 768);
-        } else {
-            backGroundLabel = new JLabel(new ImageIcon("images/tlo.jpg"));
-            backGroundLabel.setOpaque(true);
-            backGroundLabel.setBounds(0, 0, 1366, 768);
-        }
-
-        add(backGroundLabel);
-        first = !first;
-        repaint();
 
         if (source == goButton) {
             new Start().init();
@@ -138,14 +115,18 @@ public class BoardGui extends JFrame implements ActionListener {
         }
     }
 
-    private void connectToServer(final String boardSize) {
+    private void connectToServer(final UserSettings uSet) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try (Socket socket = new Socket(InetAddress.getLocalHost(), 59898)) {
                     in = new Scanner(socket.getInputStream());
                     out = new PrintWriter(socket.getOutputStream(), true);
-                    out.println(boardSize);
+
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    String settings = objectMapper.writeValueAsString(uSet);
+                    out.println(settings);
+
                     sync.countDown(); //sygnalize 'out' is initialized
 
                     while (true) {
@@ -170,6 +151,7 @@ public class BoardGui extends JFrame implements ActionListener {
                                 break;
                         }
                     }
+                    // TODO co zrobic gdy serwer sie nagle rozłaczy
                 } catch (ConnectException | UnknownHostException e) {
                     System.out.println("Cannot connect to  server - run server first");
                 } catch (IOException e) {
@@ -199,7 +181,7 @@ public class BoardGui extends JFrame implements ActionListener {
             public void run() {
                 try {
                     System.out.println(info);
-                    stateLabel.setText(info);
+//                    stateLabel.setText(info);
                     //TODO ustawic label zeby był na wieszchu i wrzystko zasłaniał, a potem się schował do tyłu
                     // https://stackoverflow.com/questions/4229638/z-order-on-java-swing-components/4229661
                     // setOpacity nie działa bo potem nie chce znikać owiadomienie,
@@ -222,7 +204,7 @@ public class BoardGui extends JFrame implements ActionListener {
 					setComponentZOrder(backGroundLabel, 1);
 					setComponentZOrder(stateLabel, 2);
 
-					stateLabel.setText("end");
+//					stateLabel.setText("end");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
