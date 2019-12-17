@@ -74,9 +74,9 @@ class Board {
                             System.out.println(player.getNickname() + " made move on position " + restOfAnswer);
                             if(game.checkMove(player, restOfAnswer)){
                                 String grid = game.extractGrid().toString();
-                                prevGrid = grid;
                                 sendToClient(player1, MessagesServer.UPDATE_BOARD_____,grid);
                                 sendToClient(player2, MessagesServer.UPDATE_BOARD_____,grid);
+                                prevGrid = grid;
                             } else {
                                 sendToClient(player, MessagesServer.WRONG_MOVE_______,"");
                             }
