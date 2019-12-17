@@ -15,14 +15,11 @@ public class GameGui extends JFrame implements ActionListener {
     private JRadioButton smallBoardRadioButton, mediumBoardRadioButton, normalBoardRadioButton;
     private JLabel newGameLabel, numberOfPlayersLabel, nickLabel;
     private ButtonGroup gamePanelButtonGroup;
-    private JTextField player2TextField, player1TextField;
+    private JTextField player1TextField;
     private JComboBox numberOfPlayersComboBox;
-    private JCheckBox nickComboBox;
     private boolean first = true;
 
     GameGui() {
-        //todo wybranie nazwy gracza
-        //todo After choose option in ComboBoc refresh page - sizeOf(nicklist) = N;
         setSize(1366, 768);
         setTitle("Go game - New Game");
         setLayout(null);
@@ -81,46 +78,31 @@ public class GameGui extends JFrame implements ActionListener {
         add(mediumBoardRadioButton);
         add(normalBoardRadioButton);
 
-        numberOfPlayersLabel = new JLabel("Select number of human players:");
+        numberOfPlayersLabel = new JLabel("Select opponennt:");
         numberOfPlayersLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         numberOfPlayersLabel.setForeground(Color.white);
         numberOfPlayersLabel.setBounds(220, 315, 370, 25);
         add(numberOfPlayersLabel);
 
         numberOfPlayersComboBox = new JComboBox();
-        numberOfPlayersComboBox.addItem("one");
-        numberOfPlayersComboBox.addItem("two");
-        numberOfPlayersComboBox.setBounds(590, 315, 50, 25);
+        numberOfPlayersComboBox.addItem("another human");
+        numberOfPlayersComboBox.addItem("bot");
+        numberOfPlayersComboBox.setBounds(450, 315, 175, 25);
         getContentPane().add(numberOfPlayersComboBox);
         numberOfPlayersComboBox.addActionListener(this);
 
         //nick of players
-        nickComboBox = new JCheckBox("Do you want to change youre nicks set in Settings?"); //check box
-        nickComboBox.setBounds(220, 350, 650, 20);
-        nickComboBox.setFont(new Font("SansSerif", Font.BOLD, 18));
-        nickComboBox.setForeground(Color.white);
-        nickComboBox.setContentAreaFilled(false);
-        nickComboBox.addActionListener(this);
-        add(nickComboBox);
-
-        nickLabel = new JLabel("Please type nick in fields: ");
+        nickLabel = new JLabel("Set nickname"); //check box
+        nickLabel.setBounds(220, 350, 200, 25);
         nickLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         nickLabel.setForeground(Color.white);
-        nickLabel.setBounds(290, 385, 280, 25);
-        nickLabel.setVisible(false);
         add(nickLabel);
 
         player1TextField = new JTextField("Player1");        //area to fill text
-        player1TextField.setBounds(530, 425, 130, 25);
+        player1TextField.setBounds(530, 350, 130, 25);
         add(player1TextField);
         player1TextField.setToolTipText("Please type nick of Player1"); //tool tip
-        player1TextField.setVisible(false);
-
-        player2TextField = new JTextField("Player2/Bot");        //area to fill text
-        player2TextField.setBounds(530, 455, 130, 25);
-        add(player2TextField);
-        player2TextField.setToolTipText("Please type nick of Player2 or Bot"); //tool tip
-        player2TextField.setVisible(false);
+        player1TextField.setVisible(true);
 
         //background
         backGroundLabel = new JLabel(new ImageIcon("images/GO_BG.jpg"));
@@ -131,21 +113,6 @@ public class GameGui extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
-        remove(backGroundLabel);
-
-        if (first) {
-            backGroundLabel = new JLabel(new ImageIcon("images/GO_BG.jpg"));
-            backGroundLabel.setOpaque(true);
-            backGroundLabel.setBounds(0, 0, 1366, 768);
-        } else {
-            backGroundLabel = new JLabel(new ImageIcon("images/GO_BG.jpg"));
-            backGroundLabel.setOpaque(true);
-            backGroundLabel.setBounds(0, 0, 1366, 768);
-        }
-
-        add(backGroundLabel);
-        first = !first;
-        repaint();
 
         if (source == buttonBack) {
             MenuGui menu = new MenuGui();
@@ -154,60 +121,28 @@ public class GameGui extends JFrame implements ActionListener {
             this.setVisible(false);
         }
 
-        if (source == nickComboBox) {
-            if (nickComboBox.isSelected()) {
-                nickLabel.setVisible(true);
-                player2TextField.setVisible(true);
-                player1TextField.setVisible(true);
-
-            } else if (!nickComboBox.isSelected()) {
-                nickLabel.setVisible(false);
-                player2TextField.setVisible(false);
-                player1TextField.setVisible(false);
-
-            }
-        }
-
-        //todo trzeba to przemyslec
         if (source == startButton) {
-            if (smallBoardRadioButton.isSelected()) {
-                BoardGui playingBoard = new BoardGui();
-                playingBoard.setLocation(this.getX(), this.getY());
-                playingBoard.setVisible(true);
-                this.setVisible(false);
-            } else if (mediumBoardRadioButton.isSelected()) {
-                BoardGui playingBoard = new BoardGui();
-                playingBoard.setLocation(this.getX(), this.getY());
-                playingBoard.setVisible(true);
-                this.setVisible(false);
-            } else {
-                BoardGui playingBoard = new BoardGui();
-                playingBoard.setLocation(this.getX(), this.getY());
-                playingBoard.setVisible(true);
-                this.setVisible(false);
-            }
+            createGame();
         }
 
-        if (source == numberOfPlayersComboBox) {
-            String liczbaGraczy = numberOfPlayersComboBox.getSelectedItem().toString();
+    }
 
-            if (liczbaGraczy.equals("one")) { //set players with bot and one player
-                Settings.players = Players.get(0);
-            } else { //set plaeyrs with second player
-                Settings.players = Players.get(2);
-            }
-        }
+    private void createGame() {
+        UserSettings uSet = new UserSettings();
 
+        if (smallBoardRadioButton.isSelected())         uSet.setSize(9);
+        else if (mediumBoardRadioButton.isSelected())   uSet.setSize(13);
+        else                                            uSet.setSize(19);
 
-        if (source == gamePanelButtonGroup) {
+        String liczbaGraczy = numberOfPlayersComboBox.getSelectedItem().toString();
+        if(liczbaGraczy.equals("bot"))  uSet.setPlayersCount(1);
+        else                            uSet.setPlayersCount(2);
 
-            if (normalBoardRadioButton.isSelected()) {
-                Settings.boards = Boards.get(2);
-            } else if (mediumBoardRadioButton.isSelected()) {
-                Settings.boards = Boards.get(1);
-            } else {
-                Settings.boards = Boards.get(0);
-            }
-        }
+        uSet.setNick(player1TextField.getText());
+
+        BoardGui playingBoard = new BoardGui(uSet);
+        playingBoard.setLocation(this.getX(), this.getY());
+        playingBoard.setVisible(true);
+        this.setVisible(false);
     }
 }

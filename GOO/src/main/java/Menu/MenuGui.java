@@ -37,25 +37,15 @@ public class MenuGui extends JFrame implements ActionListener {
         newGameButton.setFont(new Font("SansSerif", Font.BOLD, 48));
         newGameButton.addActionListener(this);
 
-        //Settings button
-        /*bSettings = new JButton("SETTINGS");
-        bSettings.setBounds(20, 600, 350, 50);
-        add(bSettings);
-        bSettings.setForeground(Color.black);
-        bSettings.setContentAreaFilled(false);
-        bSettings.setToolTipText("Click here to New Game");
-        bSettings.setFont(new Font("SansSerif", Font.BOLD, 48));
-        bSettings.addActionListener(this);*/
-
-        //Settings button
-        loadGameButton = new JButton("LOAD");
+        //Load game button
+        /*loadGameButton = new JButton("LOAD");
         loadGameButton.setBounds(1100, 600, 250, 50);
         add(loadGameButton);
         loadGameButton.setForeground(Color.black);
         loadGameButton.setContentAreaFilled(false);
         loadGameButton.setToolTipText("Click here to Load Game");
         loadGameButton.setFont(new Font("SansSerif", Font.BOLD, 48));
-        loadGameButton.addActionListener(this);
+        loadGameButton.addActionListener(this);*/
 
         //Background
         backGroundLabel = new JLabel(new ImageIcon("images/GO_BG.jpg"));
@@ -66,32 +56,10 @@ public class MenuGui extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
-        remove(backGroundLabel);
-
-        if (first) {
-            backGroundLabel = new JLabel(new ImageIcon("images/GO_BG.jpg"));
-            backGroundLabel.setOpaque(true);
-            backGroundLabel.setBounds(0, 0, 1366, 768);
-        } else {
-            backGroundLabel = new JLabel(new ImageIcon("images/GO_BG.jpg"));
-            backGroundLabel.setOpaque(true);
-            backGroundLabel.setBounds(0, 0, 1366, 768);
-        }
-
-        add(backGroundLabel);
-        first = !first;
-        repaint();
 
         if (source == exitButton) {
             dispose();//exit
         }
-        /*else if (source == bSettings)
-        {
-            SettingsGui settings = new SettingsGui();
-            settings.setLocation(this.getX(), this.getY());
-            settings.setVisible(true);
-            this.setVisible(false);
-        }*/
 
         else if (source == newGameButton) {
             GameGui game = new GameGui();
