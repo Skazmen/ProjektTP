@@ -106,6 +106,7 @@ class Board {
                 player2.setColor(Color.BLACK);
             }
             game = new Game(size);
+            System.out.println("Created new game");
         }
     }
 

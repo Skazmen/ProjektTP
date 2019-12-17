@@ -1,16 +1,14 @@
 package Menu;
 
-import Game.Start;
+import Game.GameBoard;
 import Server.Enums.MessagesClient;
 import Server.Enums.MessagesServer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.swing.*;
+import javax.swing.event.AncestorListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ConnectException;
@@ -20,72 +18,27 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 
-public class BoardGui extends JFrame implements ActionListener {
+public class BoardGui extends JFrame {
     private Scanner in;
     private PrintWriter out;
     private CountDownLatch sync = new CountDownLatch(1); //for 'sendToServer' to wait for 'out' to be inicjalized;
-    private JButton surrenderButton, goButton;
+    private JButton surrenderButton, skipButton;
     private JLabel backGroundLabel, stateLabel;
-    private boolean first = true;
-    int test = 0;
+    GameBoard board;
 
     BoardGui(UserSettings uSet) {
+
         //połączenie z serwerem
         connectToServer(uSet);
-        this.setBackground(Color.ORANGE);
+
+        //stworzenie wyglądu
+        createGUI(uSet.getSize());
 
         //wysłanie wiadomości
         sendToServer(MessagesClient.WAITING_FOR_GAME);
-//        sendToServer(MessagesClient.MADE_MOVE);
-//        sendToServer(MessagesClient.GIVE_UP_MOVE);
-//        sendToServer(MessagesClient.SURRENDER);
-
-        setSize(1366, 768);
-        setTitle("Go game");
-        setLayout(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setResizable(false);
-
-        //Back button
-        goButton = new JButton("Skip Move");
-        goButton.setBounds(1180, 560, 180, 30);
-        add(goButton);
-        goButton.setForeground(Color.white);
-        goButton.setContentAreaFilled(false);
-        goButton.setToolTipText("Click here to leave session");
-        goButton.setFont(new Font("SansSerif", Font.BOLD, 20));
-        goButton.addActionListener(this);
-        setResizable(false);
-
-
-        surrenderButton = new JButton("Surrender");
-        surrenderButton.setBounds(1180, 660, 180, 30);
-        add(surrenderButton);
-        surrenderButton.setForeground(Color.white);
-        surrenderButton.setContentAreaFilled(false);
-        surrenderButton.setToolTipText("Click here to go session");
-        surrenderButton.setFont(new Font("SansSerif", Font.BOLD, 20));
-        surrenderButton.addActionListener(this);
-        setResizable(false);
-
-        //background
-        backGroundLabel = new JLabel(new ImageIcon("images/loading.jpg"));
-        backGroundLabel.setOpaque(true);
-        backGroundLabel.setBounds(0, 0, 1366, 768);
-        add(backGroundLabel);
-
-
-        /*stateLabel = new JLabel("INFO", SwingConstants.CENTER);
-        stateLabel.setSize(1366, 768);
-        stateLabel.setFont(new Font("Sans-Serif", Font.BOLD, 30));
-        stateLabel.setForeground(Color.red);
-
-        add(stateLabel);
-
-        setComponentZOrder(surrenderButton, 0);
-		setComponentZOrder(stateLabel, 1);
-		setComponentZOrder(backGroundLabel, 2);
-	    */
+        //sendToServer(MessagesClient.MADE_MOVE);
+        //sendToServer(MessagesClient.GIVE_UP_MOVE);
+        //sendToServer(MessagesClient.SURRENDER);
 
         //powiadomienie serwera przed zamknieciem
         this.addWindowListener(new WindowAdapter() {
@@ -97,22 +50,83 @@ public class BoardGui extends JFrame implements ActionListener {
         });
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        Object source = e.getSource();
+    private void createGUI(int size) {
+        setSize(1366, 768);
+        setTitle("Go game");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
 
-        if (source == goButton) {
-            new Start().init();
-            this.setVisible(false);
-        }
+        //skip
+        skipButton = new JButton("Skip Move");
+        skipButton.setBounds(1000, 560, 180, 30);
+        getContentPane().add(skipButton);
+        skipButton.setForeground(Color.white);
+        skipButton.setContentAreaFilled(false);
+        skipButton.setToolTipText("Click here to leave session");
+        skipButton.setFont(new Font("SansSerif", Font.BOLD, 20));
+        skipButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                sendToServer(MessagesClient.GIVE_UP_MOVE);
+            }
+        });
 
-        if (source == surrenderButton) {
-            sendToServer(MessagesClient.SURRENDER);
-            MenuGui menu = new MenuGui();
-            menu.setLocation(this.getX(), this.getY());
-            menu.setVisible(true);
-            this.setVisible(false);
-        }
+        //surrender
+        surrenderButton = new JButton("Surrender");
+        surrenderButton.setBounds(1000, 660, 180, 30);
+        getContentPane().add(surrenderButton);
+        surrenderButton.setForeground(Color.white);
+        surrenderButton.setContentAreaFilled(false);
+        surrenderButton.setToolTipText("Click here to go session");
+        surrenderButton.setFont(new Font("SansSerif", Font.BOLD, 20));
+        surrenderButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                sendToServer(MessagesClient.SURRENDER);
+            }
+        });
+
+        //board to show moves
+        board = new GameBoard(size);
+        board.setBounds(150,40,650,650);
+        board.setVisible(false);
+        getContentPane().add(board);
+        board.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                if(!stateLabel.isVisible()){
+                    int[] position = board.makeMove(e);
+                    notification("Verification",1000);
+                }
+            }
+        });
+
+        //background
+        backGroundLabel = new JLabel(new ImageIcon("images/loading.jpg"));
+        backGroundLabel.setOpaque(true);
+        backGroundLabel.setBounds(0, 0, 1366, 768);
+        getContentPane().add(backGroundLabel);
+
+        //popup
+        stateLabel = new JLabel("Waiting for opponent...") {
+            @Override protected void paintComponent(Graphics g) {
+                g.setColor(getBackground());
+                g.fillRect(0, 0, getWidth(), getHeight());
+                super.paintComponent(g);
+            }
+            @Override public boolean isOpaque() {
+                return false;
+            }
+        };
+        stateLabel.setBackground(new Color(0x88888800, true));
+        stateLabel.setForeground(Color.WHITE);
+        stateLabel.setFont(stateLabel.getFont().deriveFont(30f));
+        stateLabel.setHorizontalAlignment(JLabel.CENTER);
+        stateLabel.setVerticalAlignment(JLabel.CENTER);
+        stateLabel.setBounds(0, 0, 1366, 768);
+        getLayeredPane().add(stateLabel, JLayeredPane.POPUP_LAYER);
+        stateLabel.setVisible(true);
     }
 
     private void connectToServer(final UserSettings uSet) {
@@ -175,36 +189,17 @@ public class BoardGui extends JFrame implements ActionListener {
         }).start();
     }
 
-    private void notification(final String info, final int time){
+    private synchronized void notification(final String info, final int time){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     System.out.println(info);
-//                    stateLabel.setText(info);
-                    //TODO ustawic label zeby był na wieszchu i wrzystko zasłaniał, a potem się schował do tyłu
-                    // https://stackoverflow.com/questions/4229638/z-order-on-java-swing-components/4229661
-                    // setOpacity nie działa bo potem nie chce znikać owiadomienie,
-                    // próbowałem setComponentZOrder działa jak na razie całkiem ładnie ale nwm czy zasłania wszystko i zapobiega klikaniu,
-                    // ewentualnie możesz spróbować z JLayeredPane, tak jak w linku powyżej
-
-//					setComponentZOrder(surrenderButton, 0);
-//					setComponentZOrder(stateLabel, 1);
-//					setComponentZOrder(backGroundLabel, 2);
-//                    Thread.sleep(time);
-//					setComponentZOrder(surrenderButton, 0);
-//					setComponentZOrder(backGroundLabel, 1);
-//					setComponentZOrder(stateLabel, 2);
-
-					setComponentZOrder(stateLabel, 0);
-					setComponentZOrder(surrenderButton, 1);
-					setComponentZOrder(backGroundLabel, 2);
+                    stateLabel.setText(info);
+                    stateLabel.setVisible(true);
 					Thread.sleep(time);
-					setComponentZOrder(surrenderButton, 0);
-					setComponentZOrder(backGroundLabel, 1);
-					setComponentZOrder(stateLabel, 2);
-
-//					stateLabel.setText("end");
+					stateLabel.setVisible(false);
+					board.setVisible(true);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
