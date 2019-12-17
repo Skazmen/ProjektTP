@@ -1,14 +1,12 @@
 package Menu;
 
-import Game.GameBoard;
+//import GameBoardPanel;
 import Server.Enums.MessagesClient;
 import Server.Enums.MessagesServer;
 import Server.ExtractedGrid;
-import Server.Game;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.swing.*;
-import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -17,7 +15,6 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 
@@ -27,7 +24,7 @@ public class BoardGui extends JFrame {
     private CountDownLatch sync = new CountDownLatch(1); //for 'sendToServer' to wait for 'out' to be inicjalized;
     private JButton surrenderButton, skipButton;
     private JLabel backGroundLabel, stateLabel;
-    GameBoard board;
+    GameBoardPanel board;
     boolean move = false;
 
     BoardGui(UserSettings uSet) {
@@ -88,7 +85,7 @@ public class BoardGui extends JFrame {
         });
 
         //board to show moves
-        board = new GameBoard(size);
+        board = new GameBoardPanel(size);
         board.setBounds(150,40,650,650);
         board.setVisible(false);
         getContentPane().add(board);

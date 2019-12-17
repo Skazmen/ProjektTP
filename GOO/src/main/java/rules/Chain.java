@@ -1,34 +1,34 @@
 package rules;
 
 import Server.Enums.Colours;
+import Server.GridPosition;
 
 import java.util.ArrayList;
 
 
 public class Chain {
 
-    public ArrayList<Stone> stones;
-    public Colours colour;
+    public ArrayList<GridPosition> stones;
 
-    public Chain(Colours state) {
+    public Chain() {
         stones = new ArrayList<>();
     }
 
     public int getLiberties() {
         int total = 0;
-        for (Stone stone : stones) {
-            total += stone.liberties;
+        for (GridPosition stone : stones) {
+            total += stone.getLiberties();
         }
         return total;
     }
 
-    public void addStone(Stone stone) {
+    public void addStone(GridPosition stone) {
         stone.chain = this;
         stones.add(stone);
     }
 
     public void join(Chain chain) {
-        for (Stone stone : chain.stones) {
+        for (GridPosition stone : chain.stones) {
             addStone(stone);
         }
     }

@@ -1,9 +1,10 @@
-package Game;
+package Menu;
 
 import Server.Enums.Colours;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.Menu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -12,7 +13,7 @@ import java.awt.event.MouseEvent;
 import static java.awt.Color.BLUE;
 
 
-public class GameBoard extends JPanel {
+public class GameBoardPanel extends JPanel {
 
     private static final long serialVersionUID = -494530433694385328L;
 
@@ -23,7 +24,7 @@ public class GameBoard extends JPanel {
     public int borderSize;
     public int[][] positions;
 
-    public GameBoard(int s) {
+    public GameBoardPanel(int s) {
         this.size = s;
         this.numberOfTiles = size - 1;
         this.tileSize = 650 / (numberOfTiles + 2);
