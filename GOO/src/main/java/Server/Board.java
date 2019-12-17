@@ -4,6 +4,8 @@ import Menu.UserSettings;
 import Server.Enums.MessagesClient;
 import Server.Enums.MessagesServer;
 import Server.Enums.Players;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.awt.*;
 import java.io.PrintWriter;
@@ -55,32 +57,42 @@ class Board {
         new Thread(new Runnable() {
             boolean listen = true;
             Scanner scanner = player.getInputStream();
+            String prevGrid = "";
 
             @Override
             public void run() {
                 while (listen) {
-                    MessagesClient clientMessage = MessagesClient.valueOf(scanner.nextLine());
-                    switch (clientMessage) {
-                        case WAITING_FOR_GAME:
+                    String clientAnswer = scanner.nextLine();
+                    MessagesClient messagesClient = MessagesClient.valueOf(clientAnswer.substring(0,17));
+                    String restOfAnswer = clientAnswer.substring(17);
+                    switch (messagesClient) {
+                        case WAITING_FOR_GAME_:
                             System.out.println(player.getNickname() + " is waiting for another player");
                             checkGameCreation();
                             break;
-                        case MADE_MOVE:
-                            System.out.println(player.getNickname() + " made move");
-                            sendToClient(player, MessagesServer.WRONG_MOVE);
-                            sendToClient(player, MessagesServer.UPDATE_BOARD);
-
+                        case MADE_MOVE________:
+                            System.out.println(player.getNickname() + " made move on position " + restOfAnswer);
+                            if(game.checkMove(player, restOfAnswer)){
+                                String grid = game.extractGrid().toString();
+                                prevGrid = grid;
+                                sendToClient(player1, MessagesServer.UPDATE_BOARD_____,grid);
+                                sendToClient(player2, MessagesServer.UPDATE_BOARD_____,grid);
+                            } else {
+                                sendToClient(player, MessagesServer.WRONG_MOVE_______,"");
+                            }
                             break;
-                        case GIVE_UP_MOVE:
+                        case GIVE_UP_MOVE_____:
                             System.out.println(player.getNickname() + " decided not to move this time");
+                            sendToClient(player1, MessagesServer.UPDATE_BOARD_____,prevGrid);
+                            sendToClient(player2, MessagesServer.UPDATE_BOARD_____,prevGrid);
                             break;
-                        case SURRENDER:
+                        case SURRENDER________:
                             System.out.println(player.getNickname() + " surrendered the game");
-                            sendToClient(player1, MessagesServer.END_GAME);
-                            sendToClient(player2, MessagesServer.END_GAME);
+                            sendToClient(player1, MessagesServer.END_GAME_________,player.getNickname());
+                            sendToClient(player2, MessagesServer.END_GAME_________,player.getNickname());
 
                             break;
-                        case CLOSE:
+                        case CLOSE____________:
                             // stops listening to client when he closes his window
                             listen = false;
                             System.out.println(player.getNickname() + " disconnected");
@@ -95,13 +107,13 @@ class Board {
     private void checkGameCreation() {
         if(player1 != null && player2 != null){
             if(Math.random() >  0.5){
-                sendToClient(player1, MessagesServer.SET_COLOR_BLACK);
-                sendToClient(player2, MessagesServer.SET_COLOR_WHITE);
+                sendToClient(player1, MessagesServer.SET_COLOR_BLACK__,"");
+                sendToClient(player2, MessagesServer.SET_COLOR_WHITE__,"");
                 player1.setColor(Color.BLACK);
                 player2.setColor(Color.WHITE);
             } else {
-                sendToClient(player1, MessagesServer.SET_COLOR_WHITE);
-                sendToClient(player2, MessagesServer.SET_COLOR_BLACK);
+                sendToClient(player1, MessagesServer.SET_COLOR_WHITE__,"");
+                sendToClient(player2, MessagesServer.SET_COLOR_BLACK__,"");
                 player1.setColor(Color.WHITE);
                 player2.setColor(Color.BLACK);
             }
@@ -111,9 +123,10 @@ class Board {
     }
 
 
-    private void sendToClient(final Player player, final MessagesServer message) {
+    private void sendToClient(final Player player, final MessagesServer message, final String additionalInfo) {
         if(player.getOutputStream() != null){
-            player.getOutputStream().println(message);
+            String mess = message.toString() + additionalInfo;
+            player.getOutputStream().println(mess);
         }
         else System.out.println("error");
     }

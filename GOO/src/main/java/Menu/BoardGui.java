@@ -3,6 +3,8 @@ package Menu;
 import Game.GameBoard;
 import Server.Enums.MessagesClient;
 import Server.Enums.MessagesServer;
+import Server.ExtractedGrid;
+import Server.Game;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.swing.*;
@@ -15,6 +17,7 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 
@@ -25,6 +28,7 @@ public class BoardGui extends JFrame {
     private JButton surrenderButton, skipButton;
     private JLabel backGroundLabel, stateLabel;
     GameBoard board;
+    boolean move = false;
 
     BoardGui(UserSettings uSet) {
 
@@ -35,17 +39,14 @@ public class BoardGui extends JFrame {
         createGUI(uSet.getSize());
 
         //wysłanie wiadomości
-        sendToServer(MessagesClient.WAITING_FOR_GAME);
-        //sendToServer(MessagesClient.MADE_MOVE);
-        //sendToServer(MessagesClient.GIVE_UP_MOVE);
-        //sendToServer(MessagesClient.SURRENDER);
+        sendToServer(MessagesClient.WAITING_FOR_GAME_,"");
 
         //powiadomienie serwera przed zamknieciem
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
-                sendToServer(MessagesClient.CLOSE);
+                sendToServer(MessagesClient.CLOSE____________,"");
             }
         });
     }
@@ -67,7 +68,7 @@ public class BoardGui extends JFrame {
         skipButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                sendToServer(MessagesClient.GIVE_UP_MOVE);
+                if(move) sendToServer(MessagesClient.GIVE_UP_MOVE_____,"");
             }
         });
 
@@ -82,7 +83,7 @@ public class BoardGui extends JFrame {
         surrenderButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                sendToServer(MessagesClient.SURRENDER);
+                sendToServer(MessagesClient.SURRENDER________,"");
             }
         });
 
@@ -97,7 +98,8 @@ public class BoardGui extends JFrame {
                 super.mouseReleased(e);
                 if(!stateLabel.isVisible()){
                     int[] position = board.makeMove(e);
-                    notification("Verification",1000);
+                    sendToServer(MessagesClient.MADE_MOVE________,(position[0] +"/"+ position[1]));
+                    untimedNotification("Verification");
                 }
             }
         });
@@ -144,23 +146,37 @@ public class BoardGui extends JFrame {
                     sync.countDown(); //sygnalize 'out' is initialized
 
                     while (true) {
-                        MessagesServer serverAnswer = MessagesServer.valueOf(in.nextLine());
-                        switch (serverAnswer) {
-                            case SET_COLOR_BLACK:
-                                notification("Your color is Black", 4000);
+                        String serverAnswer = in.nextLine();
+                        MessagesServer messagesServer = MessagesServer.valueOf(serverAnswer.substring(0,17));
+                        String restOfAnswer = serverAnswer.substring(17);
+                        switch (messagesServer) {
+                            case SET_COLOR_BLACK__:
+                                timedNotification("Your color is Black", 3000);
+                                move = true;
+                                Thread.sleep(3000);
+                                timedNotification("Your move", 1000);
                                 break;
-                            case SET_COLOR_WHITE:
-                                notification("Your color is White", 4000);
+                            case SET_COLOR_WHITE__:
+                                timedNotification("Your color is White", 3000);
+                                move = false;
+                                Thread.sleep(3000);
+                                untimedNotification("Wait for opponent move");
                                 break;
-                            case WRONG_MOVE:
-                                notification("The move you tried to make is not allowed", 2000);
+                            case WRONG_MOVE_______:
+                                timedNotification("The move you tried to make is not allowed", 2000);
                                 break;
-                            case UPDATE_BOARD:
-                                notification("Your move was good, here is updated board", 1000);
-                                //TODO zczytac nową planszę i ją narysować
+                            case UPDATE_BOARD_____:
+                                board.update(ExtractedGrid.fromString(restOfAnswer));
+                                move = !move;
+                                if(move){
+                                    endNotivication();
+                                    timedNotification("Your move",1000);
+                                } else {
+                                    untimedNotification("Wait for opponent move");
+                                }
                                 break;
-                            case END_GAME:
-                                notification("The game has ended and PlayerX won", 15000);
+                            case END_GAME_________:
+                                untimedNotification("The game has ended and " + restOfAnswer + " lost");
 								//TODO zakonczyc grę
                                 break;
                         }
@@ -170,18 +186,20 @@ public class BoardGui extends JFrame {
                     System.out.println("Cannot connect to  server - run server first");
                 } catch (IOException e) {
                     e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }).start();
     }
 
-    private void sendToServer(final MessagesClient message) {
+    private void sendToServer(final MessagesClient message, final String additionalInfo) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     sync.await(); //wait for 'out' to be initialized
-                    out.println(message.toString());
+                    out.println((message.toString() + additionalInfo));
                 } catch (NullPointerException | InterruptedException e) {
                     System.out.println("Didn't connect to server yet");
                 }
@@ -189,7 +207,7 @@ public class BoardGui extends JFrame {
         }).start();
     }
 
-    private synchronized void notification(final String info, final int time){
+    private synchronized void timedNotification(final String info, final int time){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -205,5 +223,18 @@ public class BoardGui extends JFrame {
                 }
             }
         }).start();
+    }
+    private synchronized void untimedNotification(final String info){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(info);
+                stateLabel.setText(info);
+                stateLabel.setVisible(true);
+            }
+        }).start();
+    }
+    private void endNotivication(){
+        stateLabel.setVisible(false);
     }
 }
