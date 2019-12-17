@@ -98,8 +98,8 @@ public class GameGui extends JFrame implements ActionListener {
         nickLabel.setForeground(Color.white);
         add(nickLabel);
 
-        player1TextField = new JTextField("Player1");        //area to fill text
-        player1TextField.setBounds(530, 350, 130, 25);
+        player1TextField = new JTextField("Player" + ((int) Math.floor(1+Math.random()*999)));
+        player1TextField.setBounds(450, 350, 130, 25);
         add(player1TextField);
         player1TextField.setToolTipText("Please type nick of Player1"); //tool tip
         player1TextField.setVisible(true);
