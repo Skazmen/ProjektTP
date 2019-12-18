@@ -41,11 +41,12 @@ public class Game {
     }
     void updateBoard(Player p, int x, int y){
         //TODO sprawdzenie czy cos znika po polozeniu tego
-        //addStone(x,y,p);
+//        addStone(x,y,p);
         grid[x][y].setPlayer(p);
     }
 
     public void addStone(int x, int y, Player p) {
+        System.out.println("begin add");
         GridPosition newStone = new GridPosition(x, y);
         newStone.setPlayer(p);
         grid[x][y] = newStone;
@@ -64,6 +65,7 @@ public class Game {
         if (y < size - 1) {
             neighbors[3] = grid[x][y + 1];
         }
+        System.out.println("middle add");
         //Przygowywuje Łańcuch dla nowego kamienia
         Chain finalChain = new Chain();
         for (GridPosition neighbor : neighbors) {
@@ -86,6 +88,7 @@ public class Game {
             }
         }
         finalChain.addStone(newStone);
+        System.out.println("end add");
     }
 
     public void checkStone(GridPosition stone) {
