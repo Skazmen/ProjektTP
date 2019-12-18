@@ -36,18 +36,18 @@ class Board {
     void addClient(Scanner sc, PrintWriter pw, UserSettings uSet) {
         // add first player
         if (player1 == null) {
-            player1 = new Player(uSet.getNick());
-            player1.setInputStream(sc);
-            player1.setOutputStream(pw);
-            this.size = uSet.getSize();
-            this.multiplayer = (uSet.getPlayersCount() == 2);
-            listenForPlayer(player1);
-
             if (uSet.haveBot()) {
                 //todo przydziel mu miejsce przy stole, musi być w oddzielnym ifie by było niezalezne od tego ilu graczy przy stole, przy obecnej strukturze
                 //z tego co widzę to to coś w ten deseń moze być
                 player2 = new Player(uSet.getBot().getName()); // jest tutaj dodany bot (jego nick ustawiony
-                botMovements(player2);
+                botMovements(player1, player2);
+            } else {
+                player1 = new Player(uSet.getNick());
+                player1.setInputStream(sc);
+                player1.setOutputStream(pw);
+                this.size = uSet.getSize();
+                this.multiplayer = (uSet.getPlayersCount() == 2);
+                listenForPlayer(player1);
             }
             // add second player if doesnt already existst and both chosen multiplayer mode and same board size
         } else if (multiplayer && player2 == null && uSet.getPlayersCount() == 2 && uSet.getSize() == size) {
