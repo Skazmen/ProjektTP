@@ -14,7 +14,6 @@ import static java.awt.Color.BLUE;
 
 
 public class GameBoardPanel extends JPanel {
-
     private static final long serialVersionUID = -494530433694385328L;
 
     //rozmiar
@@ -29,12 +28,12 @@ public class GameBoardPanel extends JPanel {
         this.numberOfTiles = size - 1;
         this.tileSize = 650 / (numberOfTiles + 2);
         this.borderSize = tileSize;
-        
+
         this.setBackground(Color.LIGHT_GRAY);
     }
 
     // zwraca pozycje która została kliknieta
-    public int[] makeMove(MouseEvent e){
+    public int[] makeMove(MouseEvent e) {
         int row = Math.round((float) (e.getY() - borderSize)
                 / tileSize);
         int col = Math.round((float) (e.getX() - borderSize)
@@ -51,7 +50,7 @@ public class GameBoardPanel extends JPanel {
     }
 
     // rysuje całą plansze od nowa
-    public void update(int[][] pos){
+    public void update(int[][] pos) {
         this.positions = pos;
         repaint();
     }
@@ -66,17 +65,17 @@ public class GameBoardPanel extends JPanel {
 
         g2.setColor(Color.BLACK);
         // rysowanie rzedow
-        for (int i = 0; i <size; i++) {
+        for (int i = 0; i < size; i++) {
             g2.drawLine(borderSize, i * tileSize + borderSize, tileSize
                     * numberOfTiles + borderSize, i * tileSize + borderSize);
         }
         // kolumn
-        for (int i = 0; i <size; i++) {
+        for (int i = 0; i < size; i++) {
             g2.drawLine(i * tileSize + borderSize, borderSize, i * tileSize
                     + borderSize, tileSize * numberOfTiles + borderSize);
         }
 
-        if(positions != null) {
+        if (positions != null) {
             for (int row = 0; row < size; row++) {
                 for (int col = 0; col < size; col++) {
 

@@ -1,6 +1,7 @@
 package Menu;
 
 //import GameBoardPanel;
+
 import Server.Enums.MessagesClient;
 import Server.Enums.MessagesServer;
 import Server.ExtractedGrid;
@@ -36,14 +37,14 @@ public class BoardGui extends JFrame {
         createGUI(uSet.getSize());
 
         //wysłanie wiadomości
-        sendToServer(MessagesClient.WAITING_FOR_GAME_,"");
+        sendToServer(MessagesClient.WAITING_FOR_GAME_, "");
 
         //powiadomienie serwera przed zamknieciem
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
-                sendToServer(MessagesClient.CLOSE____________,"");
+                sendToServer(MessagesClient.CLOSE____________, "");
             }
         });
     }
@@ -60,14 +61,15 @@ public class BoardGui extends JFrame {
         getContentPane().add(skipButton);
         skipButton.setForeground(Color.white);
         skipButton.setContentAreaFilled(false);
-        skipButton.setToolTipText("Click here to leave session");
+        skipButton.setToolTipText("Click here to skip move");
         skipButton.setFont(new Font("SansSerif", Font.BOLD, 20));
         skipButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if(move) sendToServer(MessagesClient.GIVE_UP_MOVE_____,"");
+                if (move) sendToServer(MessagesClient.GIVE_UP_MOVE_____, "");
             }
         });
+
 
         //surrender
         surrenderButton = new JButton("Surrender");
@@ -75,27 +77,27 @@ public class BoardGui extends JFrame {
         getContentPane().add(surrenderButton);
         surrenderButton.setForeground(Color.white);
         surrenderButton.setContentAreaFilled(false);
-        surrenderButton.setToolTipText("Click here to go session");
+        surrenderButton.setToolTipText("Click here to surrender session");
         surrenderButton.setFont(new Font("SansSerif", Font.BOLD, 20));
         surrenderButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                sendToServer(MessagesClient.SURRENDER________,"");
+                sendToServer(MessagesClient.SURRENDER________, "");
             }
         });
 
         //board to show moves
         board = new GameBoardPanel(size);
-        board.setBounds(150,40,650,650);
+        board.setBounds(150, 40, 650, 650);
         board.setVisible(false);
         getContentPane().add(board);
         board.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
-                if(!stateLabel.isVisible()){
+                if (!stateLabel.isVisible()) {
                     int[] position = board.makeMove(e);
-                    sendToServer(MessagesClient.MADE_MOVE________,(position[0] +"/"+ position[1]));
+                    sendToServer(MessagesClient.MADE_MOVE________, (position[0] + "/" + position[1]));
                     untimedNotification("Verification");
                 }
             }
@@ -109,12 +111,15 @@ public class BoardGui extends JFrame {
 
         //popup
         stateLabel = new JLabel("Waiting for opponent...") {
-            @Override protected void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 g.setColor(getBackground());
                 g.fillRect(0, 0, getWidth(), getHeight());
                 super.paintComponent(g);
             }
-            @Override public boolean isOpaque() {
+
+            @Override
+            public boolean isOpaque() {
                 return false;
             }
         };
@@ -144,7 +149,7 @@ public class BoardGui extends JFrame {
 
                     while (true) {
                         String serverAnswer = in.nextLine();
-                        MessagesServer messagesServer = MessagesServer.valueOf(serverAnswer.substring(0,17));
+                        MessagesServer messagesServer = MessagesServer.valueOf(serverAnswer.substring(0, 17));
                         String restOfAnswer = serverAnswer.substring(17);
                         switch (messagesServer) {
                             case SET_COLOR_BLACK__:
@@ -165,16 +170,16 @@ public class BoardGui extends JFrame {
                             case UPDATE_BOARD_____:
                                 board.update(ExtractedGrid.fromString(restOfAnswer));
                                 move = !move;
-                                if(move){
+                                if (move) {
                                     endNotivication();
-                                    timedNotification("Your move",1000);
+                                    timedNotification("Your move", 1000);
                                 } else {
                                     untimedNotification("Wait for opponent move");
                                 }
                                 break;
                             case END_GAME_________:
                                 untimedNotification("The game has ended and " + restOfAnswer + " lost");
-								//TODO zakonczyc grę
+                                //TODO zakonczyc grę
                                 break;
                         }
                     }
@@ -204,7 +209,7 @@ public class BoardGui extends JFrame {
         }).start();
     }
 
-    private synchronized void timedNotification(final String info, final int time){
+    private synchronized void timedNotification(final String info, final int time) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -212,16 +217,17 @@ public class BoardGui extends JFrame {
                     System.out.println(info);
                     stateLabel.setText(info);
                     stateLabel.setVisible(true);
-					Thread.sleep(time);
-					stateLabel.setVisible(false);
-					board.setVisible(true);
+                    Thread.sleep(time);
+                    stateLabel.setVisible(false);
+                    board.setVisible(true);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
     }
-    private synchronized void untimedNotification(final String info){
+
+    private synchronized void untimedNotification(final String info) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -231,7 +237,8 @@ public class BoardGui extends JFrame {
             }
         }).start();
     }
-    private void endNotivication(){
+
+    private void endNotivication() {
         stateLabel.setVisible(false);
     }
 }
