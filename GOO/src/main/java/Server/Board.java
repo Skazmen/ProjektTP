@@ -137,9 +137,9 @@ class Board {
 
 
     private void sendToClient(final Player player, final MessagesServer message, final String additionalInfo) {
-        if (player.getOutputStream() != null) {
+        if (player != null && player.getOutputStream() != null) {
             String mess = message.toString() + additionalInfo;
             player.getOutputStream().println(mess);
-        } else System.out.println("error");
+        }
     }
 }

@@ -152,13 +152,13 @@ public class BoardGui extends JFrame {
                         String restOfAnswer = serverAnswer.substring(17);
                         switch (messagesServer) {
                             case SET_COLOR_BLACK__:
-                                timedNotification("Your color is Black", 3000);
+                                untimedNotification("Your color is Black");
                                 move = true;
                                 Thread.sleep(3000);
                                 timedNotification("Your move", 1000);
                                 break;
                             case SET_COLOR_WHITE__:
-                                timedNotification("Your color is White", 3000);
+                                untimedNotification("Your color is White");
                                 move = false;
                                 Thread.sleep(3000);
                                 untimedNotification("Wait for opponent move");
@@ -167,7 +167,9 @@ public class BoardGui extends JFrame {
                                 timedNotification("The move you tried to make is not allowed", 2000);
                                 break;
                             case UPDATE_BOARD_____:
-                                board.update(ExtractedGrid.fromString(restOfAnswer));
+                                if(!restOfAnswer.isEmpty()) {
+                                    board.update(ExtractedGrid.fromString(restOfAnswer));
+                                }
                                 move = !move;
                                 if (move) {
                                     endNotivication();
