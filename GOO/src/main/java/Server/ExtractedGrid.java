@@ -7,12 +7,12 @@ public class ExtractedGrid {
     private static int size;
     private int[][] positions;
 
-    ExtractedGrid(int size){
+    public ExtractedGrid(int size){
         this.size = size;
         this.positions = new int[size][size];
     }
 
-    void setPosition(int x, int y, Color c){
+    public void setPosition(int x, int y, Color c){
         if(c == Color.BLACK) this.positions[x][y] = 1;
         else if(c == Color.WHITE) this.positions[x][y] = -1;
         else this.positions[x][y] = 0;

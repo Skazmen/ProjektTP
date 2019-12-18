@@ -1,25 +1,25 @@
-package Server;
+package Rules;
 
 import Players.HumanPlayer;
 import Players.Player;
-import rules.Chain;
+import Server.ExtractedGrid;
 
 public class Game {
 
-    private GridPosition[][] grid;
+    private Stone[][] grid;
     private int size;
 
-    Game(int size){
+    public Game(int size){
         this.size = size;
-        this.grid = new GridPosition[size][size];
+        this.grid = new Stone[size][size];
         for(int i=0; i<size; i++){
             for(int j=0; j<size; j++){
-                grid[i][j] = new GridPosition();
+                grid[i][j] = new Stone();
             }
         }
     }
 
-    ExtractedGrid extractGrid(){
+    public ExtractedGrid extractGrid(){
         ExtractedGrid ex = new ExtractedGrid(size);
         for (int i=0; i<size; i++){
             for(int j=0; j<size; j++){
@@ -29,31 +29,56 @@ public class Game {
         return ex;
     }
 
-    boolean checkMove(Player p, String encoded){
+    public boolean checkMove(Player p, String encoded){
         //TODO logika do sprawdzenia czy da sie polozyc na tej pozycji
+        // nie można położyć:
+        // - pkt bez oddechu
+        // - tak zeby zabrac ostatni oddech swojemu łańcuchowi (chyba ze taki ruch dusi kamienie przeciwnika)
+
         String[] parts = encoded.split("/");
         int x = Integer.parseInt(parts[0]);
         int y = Integer.parseInt(parts[1]);
-        if(grid[x][y].getPlayer() != null){
-            return false;
-        } else {
-            updateBoard(p,x,y);
-            return true;
-        }
+        boolean free = noPlayerInThatPlace(x,y);
+        boolean liberties = hasLibertiesAround(x,y);
+        boolean notKamikadze = doesntTakeLastChainLiberty(x,y);
+
+        updateBoard(p,x,y);
+        return free && liberties && notKamikadze;
     }
+
+
+    // zwraca true gdy na danej pozycji jest puste pole
+    private boolean noPlayerInThatPlace(int x, int y) {
+        return grid[x][y].getPlayer() == null;
+    }
+    //zwraca true gdy dana pozycja ma co najmniej 1 oddech
+    private boolean hasLibertiesAround(int x, int y) {
+        boolean up =    (y!=0       && grid[x][y-1]!=null);
+        boolean down =  (y!=size-1  && grid[x][y+1]!=null);
+        boolean left =  (x!=0       && grid[x-1][y]!=null);
+        boolean right = (x!=size-1  && grid[x+1][y]!=null);
+        System.out.println(up +" "+ down +" "+ left +" "+ right);
+        return up || down || left || right;
+    }
+    //zwraca true gdy położenie w tej pozycji nie zabierze ostatniego oddechu łańcuchowi
+    private boolean doesntTakeLastChainLiberty(int x, int y){
+        //znaleźć łańcuch sąsiadujący
+        return true;
+    }
+
     void updateBoard(Player p, int x, int y){
-        //TODO sprawdzenie czy cos znika po polozeniu tego
+        //TODO znikniecie kamieni które nie mają oddechów
 //        addStone(x,y,p);
         grid[x][y].setPlayer(p);
     }
 
     public void addStone(int x, int y, HumanPlayer p) {
         System.out.println("begin add");
-        GridPosition newStone = new GridPosition(x, y);
+        Stone newStone = new Stone(x, y);
         newStone.setPlayer(p);
         grid[x][y] = newStone;
         // sprawdza sąsiadów
-        GridPosition[] neighbors = new GridPosition[4];
+        Stone[] neighbors = new Stone[4];
         //Nie sprawdza poza planszą
         if (x > 0) {
             neighbors[0] = grid[x - 1][y];
@@ -70,7 +95,7 @@ public class Game {
         System.out.println("middle add");
         //Przygowywuje Łańcuch dla nowego kamienia
         Chain finalChain = new Chain();
-        for (GridPosition neighbor : neighbors) {
+        for (Stone neighbor : neighbors) {
             //Nic, jeśli nie ma sąsiedniego kamienia
             if (neighbor == null) {
                 continue;
@@ -93,10 +118,10 @@ public class Game {
         System.out.println("end add");
     }
 
-    public void checkStone(GridPosition stone) {
+    public void checkStone(Stone stone) {
         // spradzamy wszystkie swobody, bo kamienie tworza lancuch
         if (stone.chain.getLiberties() == 0) {
-            for (GridPosition s : stone.chain.stones) {
+            for (Stone s : stone.chain.stones) {
                 s.chain = null;
                 grid[s.getX()][s.getY()] = null;
             }

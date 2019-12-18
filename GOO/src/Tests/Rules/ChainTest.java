@@ -1,6 +1,5 @@
-package rules;
+package Rules;
 
-import Server.GridPosition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +22,7 @@ class ChainTest {
 
     @Test
     void testAddStone() {
-        final GridPosition stone = new GridPosition(0, 0);
+        final Stone stone = new Stone(0, 0);
         chainUnderTest.addStone(stone);
     }
 

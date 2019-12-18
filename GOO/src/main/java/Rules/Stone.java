@@ -1,12 +1,10 @@
-package Server;
+package Rules;
 
-import Players.HumanPlayer;
 import Players.Player;
-import rules.Chain;
 
 import java.awt.*;
 
-public class GridPosition {
+public class Stone {
 
     public Chain chain;
     private Player player;
@@ -14,10 +12,10 @@ public class GridPosition {
     public int x;
     public int y;
 
-    public GridPosition() {
+    public Stone() {
     }
 
-    public GridPosition(int x, int y) {
+    public Stone(int x, int y) {
         chain = null;
         liberties = 4;
         this.x = x;

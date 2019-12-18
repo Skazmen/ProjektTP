@@ -6,6 +6,7 @@ import Players.HumanPlayer;
 import Players.Player;
 import Server.Enums.MessagesClient;
 import Server.Enums.MessagesServer;
+import Rules.Game;
 
 import java.awt.*;
 import java.io.PrintWriter;
@@ -67,6 +68,7 @@ class Board {
     private void listenForPlayer(final Player player) {
         new Thread(new Runnable() {
             Scanner scanner = player.getInputStream();
+            //TODO zrobic obsługe błedów przy komunikacji
 
             @Override
             public void run() {

@@ -1,14 +1,11 @@
-package rules;
-
-import Server.Enums.Colours;
-import Server.GridPosition;
+package Rules;
 
 import java.util.ArrayList;
 
 
 public class Chain {
 
-    public ArrayList<GridPosition> stones;
+    public ArrayList<Stone> stones;
 
     public Chain() {
         stones = new ArrayList<>();
@@ -16,19 +13,19 @@ public class Chain {
 
     public int getLiberties() {
         int total = 0;
-        for (GridPosition stone : stones) {
+        for (Stone stone : stones) {
             total += stone.getLiberties();
         }
         return total;
     }
 
-    public void addStone(GridPosition stone) {
+    public void addStone(Stone stone) {
         stone.chain = this;
         stones.add(stone);
     }
 
     public void join(Chain chain) {
-        for (GridPosition stone : chain.stones) {
+        for (Stone stone : chain.stones) {
             addStone(stone);
         }
     }

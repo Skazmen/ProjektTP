@@ -2,18 +2,19 @@ package Server;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import Rules.Stone;
 
-class GridPositionTest {
+class StoneTest {
 
-    private GridPosition gridPositionUnderTest;
+    private Stone stoneUnderTest;
 
     @BeforeEach
     void setUp() {
-        gridPositionUnderTest = new GridPosition(2, 2);
+        stoneUnderTest = new Stone(2, 2);
     }
 
     @Test
     void testDecreaseLiberties() {
-        gridPositionUnderTest.decreaseLiberties();
+        stoneUnderTest.decreaseLiberties();
     }
 }
