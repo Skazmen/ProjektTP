@@ -1,13 +1,9 @@
 package Menu;
 
-import Server.Enums.Boards;
-import Server.Enums.Players;
-
-import java.awt.Color;
-import java.awt.Font;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.*;
 
 public class GameGui extends JFrame implements ActionListener {
     private JButton buttonBack, startButton;

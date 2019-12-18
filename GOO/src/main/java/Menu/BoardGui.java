@@ -60,7 +60,7 @@ public class BoardGui extends JFrame {
         getContentPane().add(skipButton);
         skipButton.setForeground(Color.white);
         skipButton.setContentAreaFilled(false);
-        skipButton.setToolTipText("Click here to leave session");
+        skipButton.setToolTipText("Click here to skip move");
         skipButton.setFont(new Font("SansSerif", Font.BOLD, 20));
         skipButton.addActionListener(new ActionListener() {
             @Override
@@ -69,13 +69,14 @@ public class BoardGui extends JFrame {
             }
         });
 
+
         //surrender
         surrenderButton = new JButton("Surrender");
         surrenderButton.setBounds(1000, 660, 180, 30);
         getContentPane().add(surrenderButton);
         surrenderButton.setForeground(Color.white);
         surrenderButton.setContentAreaFilled(false);
-        surrenderButton.setToolTipText("Click here to go session");
+        surrenderButton.setToolTipText("Click here to surrender session");
         surrenderButton.setFont(new Font("SansSerif", Font.BOLD, 20));
         surrenderButton.addActionListener(new ActionListener() {
             @Override
