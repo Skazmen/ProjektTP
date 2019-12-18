@@ -12,7 +12,7 @@ public class Player {
     private Color color;
 
 
-    Player(String n){
+    public Player(String n){
         this.nick = n;
     }
 
