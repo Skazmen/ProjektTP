@@ -64,9 +64,11 @@ public class Bot implements Player {
                                 makeMove();
                                 break;
                             case UPDATE_BOARD_____:
-                                board.update(ExtractedGrid.fromString(restOfAnswer));
-                                grid = board.getPositions();
-                                System.out.println(Arrays.deepToString(grid));
+                                if(!restOfAnswer.isEmpty()) {
+                                    board.update(ExtractedGrid.fromString(restOfAnswer));
+                                    grid = board.getPositions();
+                                    System.out.println(Arrays.deepToString(grid));
+                                }
                                 move = !move;
                                 if (move) {
                                     makeMove();
