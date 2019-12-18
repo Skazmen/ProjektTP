@@ -19,6 +19,8 @@ class Board {
     private boolean multiplayer;
     private Game game;
     private boolean listen = true;
+    String prevGrid = "";
+    boolean prevGiveUp = false;
 
     private static Board instance;
 
@@ -65,7 +67,6 @@ class Board {
     private void listenForPlayer(final Player player) {
         new Thread(new Runnable() {
             Scanner scanner = player.getInputStream();
-            String prevGrid = "";
 
             @Override
             public void run() {
@@ -79,6 +80,7 @@ class Board {
                             checkGameCreation();
                             break;
                         case MADE_MOVE________:
+                            prevGiveUp = false;
                             System.out.println(player.getNickname() + " made move on position " + restOfAnswer);
                             if (game.checkMove(player, restOfAnswer)) {
                                 String grid = game.extractGrid().toString();
@@ -90,9 +92,15 @@ class Board {
                             }
                             break;
                         case GIVE_UP_MOVE_____:
-                            System.out.println(player.getNickname() + " decided not to move this time");
-                            sendToClient(player1, MessagesServer.UPDATE_BOARD_____, prevGrid);
-                            sendToClient(player2, MessagesServer.UPDATE_BOARD_____, prevGrid);
+                            if(prevGiveUp) {
+                                sendToClient(player1, MessagesServer.END_GAME_________, "fin");
+                                sendToClient(player2, MessagesServer.END_GAME_________, "fin");
+                            } else {
+                                System.out.println(player.getNickname() + " decided not to move this time");
+                                sendToClient(player1, MessagesServer.UPDATE_BOARD_____, prevGrid);
+                                sendToClient(player2, MessagesServer.UPDATE_BOARD_____, prevGrid);
+                                prevGiveUp = true;
+                            }
                             break;
                         case SURRENDER________:
                             System.out.println(player.getNickname() + " surrendered the game");
@@ -108,7 +116,6 @@ class Board {
                             sendToClient(player2, MessagesServer.END_GAME_________, player.getNickname());
                             player1 = null;
                             player2 = null;
-                            //TODO przypadek gdy pierwszy sie rozlaczy zanim drugi sie polaczy
                             break;
                     }
 

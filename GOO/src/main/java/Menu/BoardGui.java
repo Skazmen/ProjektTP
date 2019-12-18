@@ -179,8 +179,11 @@ public class BoardGui extends JFrame {
                                 }
                                 break;
                             case END_GAME_________:
-                                untimedNotification("The game has ended and " + restOfAnswer + " lost");
-                                //TODO zakonczyc grę
+                                if(restOfAnswer.equals("fin")){
+                                    untimedNotification("The game has ended");
+                                } else {
+                                    untimedNotification("The game has ended and " + restOfAnswer + " lost");
+                                }
                                 break;
                         }
                     }
