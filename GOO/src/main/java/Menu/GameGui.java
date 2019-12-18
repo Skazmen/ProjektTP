@@ -1,5 +1,7 @@
 package Menu;
 
+import Bot.Bot;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -94,7 +96,7 @@ public class GameGui extends JFrame implements ActionListener {
         nickLabel.setForeground(Color.white);
         add(nickLabel);
 
-        player1TextField = new JTextField("Player" + ((int) Math.floor(1+Math.random()*999)));
+        player1TextField = new JTextField("Player" + ((int) Math.floor(1 + Math.random() * 999)));
         player1TextField.setBounds(450, 350, 130, 25);
         add(player1TextField);
         player1TextField.setToolTipText("Please type nick of Player1"); //tool tip
@@ -126,13 +128,20 @@ public class GameGui extends JFrame implements ActionListener {
     private void createGame() {
         UserSettings uSet = new UserSettings();
 
-        if (smallBoardRadioButton.isSelected())         uSet.setSize(9);
-        else if (mediumBoardRadioButton.isSelected())   uSet.setSize(13);
-        else                                            uSet.setSize(19);
+        if (smallBoardRadioButton.isSelected()) {
+            uSet.setSize(9);
+        } else if (mediumBoardRadioButton.isSelected()) {
+            uSet.setSize(13);
+        } else {
+            uSet.setSize(19);
+        }
 
-        String liczbaGraczy = numberOfPlayersComboBox.getSelectedItem().toString();
-        if(liczbaGraczy.equals("bot"))  uSet.setPlayersCount(1);
-        else                            uSet.setPlayersCount(2);
+        if (numberOfPlayersComboBox.getSelectedItem().toString().equals("bot")) {
+            uSet.setPlayersCount(1);
+            uSet.setBot(new Bot());
+        } else {
+            uSet.setPlayersCount(2);
+        }
 
         uSet.setNick(player1TextField.getText());
 
