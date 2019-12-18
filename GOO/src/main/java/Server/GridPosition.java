@@ -1,5 +1,7 @@
 package Server;
 
+import Players.HumanPlayer;
+import Players.Player;
 import rules.Chain;
 
 import java.awt.*;

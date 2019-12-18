@@ -1,11 +1,15 @@
 package Server;
 
+import Players.Bot;
 import Menu.UserSettings;
+import Players.HumanPlayer;
+import Players.Player;
 import Server.Enums.MessagesClient;
 import Server.Enums.MessagesServer;
 
 import java.awt.*;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.util.Scanner;
 
 class Board {
@@ -14,6 +18,7 @@ class Board {
     private int size;
     private boolean multiplayer;
     private Game game;
+    private boolean listen = true;
 
     private static Board instance;
 
@@ -33,88 +38,32 @@ class Board {
         return temp;
     }
 
-    void addClient(Scanner sc, PrintWriter pw, UserSettings uSet) {
+    void addClient(ServerSocket listener, Scanner sc, PrintWriter pw, UserSettings uSet) {
         // add first player
         if (player1 == null) {
-            if (uSet.haveBot()) {
-                //todo przydziel mu miejsce przy stole, musi być w oddzielnym ifie by było niezalezne od tego ilu graczy przy stole, przy obecnej strukturze
-                //z tego co widzę to to coś w ten deseń moze być
-                player2 = new Player(uSet.getBot().getName()); // jest tutaj dodany bot (jego nick ustawiony
-                botMovements(player1, player2);
-            } else {
-                player1 = new Player(uSet.getNick());
-                player1.setInputStream(sc);
-                player1.setOutputStream(pw);
-                this.size = uSet.getSize();
-                this.multiplayer = (uSet.getPlayersCount() == 2);
-                listenForPlayer(player1);
+            player1 = new HumanPlayer(uSet.getNick());
+            player1.setInputOutputStream(listener,sc,pw);
+            this.size = uSet.getSize();
+            this.multiplayer = (uSet.getPlayersCount() == 2);
+            listenForPlayer(player1);
+
+            // add bot
+            if(!multiplayer) {
+                player2 = new Bot(size);
+                player2.setInputOutputStream(listener,sc,pw);
+                listenForPlayer(player2);
             }
-            // add second player if doesnt already existst and both chosen multiplayer mode and same board size
+
+        // add second player if doesnt already existst and both chosen multiplayer mode and same board size
         } else if (multiplayer && player2 == null && uSet.getPlayersCount() == 2 && uSet.getSize() == size) {
-            player2 = new Player(uSet.getNick());
-            player2.setInputStream(sc);
-            player2.setOutputStream(pw);
+            player2 = new HumanPlayer(uSet.getNick());
+            player2.setInputOutputStream(listener,sc,pw);
             listenForPlayer(player2);
         }
     }
 
-    private void botMovements(final Player player, final Player bot) {
-        //todo: logika bota typu: if(mozliwy ruch jest taki, to zrób to) ... etc
-        //todo: skopiowałem to co jest w lsitenerze, tylko tutaj zamiast sendToClient(player2) bym zrobił metode sendToBot i tam robi jakiś możliwy ruch
-        new Thread(new Runnable() {
-            boolean listen = true;
-            Scanner scanner = player.getInputStream();
-            String prevGrid = "";
-
-            @Override
-            public void run() {
-                while (listen) {
-                    String clientAnswer = scanner.nextLine();
-                    MessagesClient messagesClient = MessagesClient.valueOf(clientAnswer.substring(0, 17));
-                    String restOfAnswer = clientAnswer.substring(17);
-                    switch (messagesClient) {
-                        case WAITING_FOR_GAME_:
-                            System.out.println(player.getNickname() + " is waiting for another player");
-                            checkGameCreation();
-                            break;
-                        case MADE_MOVE________:
-                            System.out.println(player.getNickname() + " made move on position " + restOfAnswer);
-                            if (game.checkMove(player, restOfAnswer)) {
-                                String grid = game.extractGrid().toString();
-                                sendToClient(player1, MessagesServer.UPDATE_BOARD_____, grid);
-                                sendToClient(player2, MessagesServer.UPDATE_BOARD_____, grid);
-                                prevGrid = grid;
-                            } else {
-                                sendToClient(player, MessagesServer.WRONG_MOVE_______, "");
-                            }
-                            break;
-                        case GIVE_UP_MOVE_____:
-                            System.out.println(player.getNickname() + " decided not to move this time");
-                            sendToClient(player1, MessagesServer.UPDATE_BOARD_____, prevGrid);
-                            sendToClient(player2, MessagesServer.UPDATE_BOARD_____, prevGrid);
-                            break;
-                        case SURRENDER________:
-                            System.out.println(player.getNickname() + " surrendered the game");
-                            sendToClient(player1, MessagesServer.END_GAME_________, player.getNickname());
-                            sendToClient(player2, MessagesServer.END_GAME_________, player.getNickname());
-
-                            break;
-                        case CLOSE____________:
-                            // stops listening to client when he closes his window
-                            listen = false;
-                            System.out.println(player.getNickname() + " disconnected");
-                            //TODO przypadek gdy pierwszy sie rozlaczy zanim drugi sie polaczy
-                            break;
-                    }
-                }
-            }
-        }).start();
-        //zrobiłbym to tak -> skopiuj zawartość
-    }
-
     private void listenForPlayer(final Player player) {
         new Thread(new Runnable() {
-            boolean listen = true;
             Scanner scanner = player.getInputStream();
             String prevGrid = "";
 
@@ -155,9 +104,14 @@ class Board {
                             // stops listening to client when he closes his window
                             listen = false;
                             System.out.println(player.getNickname() + " disconnected");
+                            sendToClient(player1, MessagesServer.END_GAME_________, player.getNickname());
+                            sendToClient(player2, MessagesServer.END_GAME_________, player.getNickname());
+                            player1 = null;
+                            player2 = null;
                             //TODO przypadek gdy pierwszy sie rozlaczy zanim drugi sie polaczy
                             break;
                     }
+
                 }
             }
         }).start();

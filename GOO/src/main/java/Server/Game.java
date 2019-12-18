@@ -1,5 +1,7 @@
 package Server;
 
+import Players.HumanPlayer;
+import Players.Player;
 import rules.Chain;
 
 public class Game {
@@ -45,7 +47,7 @@ public class Game {
         grid[x][y].setPlayer(p);
     }
 
-    public void addStone(int x, int y, Player p) {
+    public void addStone(int x, int y, HumanPlayer p) {
         System.out.println("begin add");
         GridPosition newStone = new GridPosition(x, y);
         newStone.setPlayer(p);

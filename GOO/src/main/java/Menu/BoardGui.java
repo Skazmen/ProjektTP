@@ -23,8 +23,7 @@ public class BoardGui extends JFrame {
     private Scanner in;
     private PrintWriter out;
     private CountDownLatch sync = new CountDownLatch(1); //for 'sendToServer' to wait for 'out' to be inicjalized;
-    private JButton surrenderButton, skipButton;
-    private JLabel backGroundLabel, stateLabel;
+    private JLabel stateLabel;
     GameBoardPanel board;
     boolean move = false;
 
@@ -56,7 +55,7 @@ public class BoardGui extends JFrame {
         setResizable(false);
 
         //skip
-        skipButton = new JButton("Skip Move");
+        JButton skipButton = new JButton("Skip Move");
         skipButton.setBounds(1000, 560, 180, 30);
         getContentPane().add(skipButton);
         skipButton.setForeground(Color.white);
@@ -72,7 +71,7 @@ public class BoardGui extends JFrame {
 
 
         //surrender
-        surrenderButton = new JButton("Surrender");
+        JButton surrenderButton = new JButton("Surrender");
         surrenderButton.setBounds(1000, 660, 180, 30);
         getContentPane().add(surrenderButton);
         surrenderButton.setForeground(Color.white);
@@ -104,7 +103,7 @@ public class BoardGui extends JFrame {
         });
 
         //background
-        backGroundLabel = new JLabel(new ImageIcon("images/loading.jpg"));
+        JLabel backGroundLabel = new JLabel(new ImageIcon("images/loading.jpg"));
         backGroundLabel.setOpaque(true);
         backGroundLabel.setBounds(0, 0, 1366, 768);
         getContentPane().add(backGroundLabel);

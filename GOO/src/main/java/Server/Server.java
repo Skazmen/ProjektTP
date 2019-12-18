@@ -23,7 +23,7 @@ public class Server {
 				if(settings != null) {
 					ObjectMapper objectMapper = new ObjectMapper();
 					UserSettings uSet = objectMapper.readValue(settings, UserSettings.class);
-					board.addClient(in, out, uSet);
+					board.addClient(listener, in, out, uSet);
 				}
 			}
 		} catch (IOException e) {

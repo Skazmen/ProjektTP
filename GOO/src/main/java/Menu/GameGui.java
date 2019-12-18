@@ -1,6 +1,6 @@
 package Menu;
 
-import Bot.Bot;
+import Players.Bot;
 
 import javax.swing.*;
 import java.awt.*;
@@ -96,7 +96,7 @@ public class GameGui extends JFrame implements ActionListener {
         nickLabel.setForeground(Color.white);
         add(nickLabel);
 
-        player1TextField = new JTextField("Player" + ((int) Math.floor(1 + Math.random() * 999)));
+        player1TextField = new JTextField("Player_" + ((int) Math.floor(1 + Math.random() * 999)));
         player1TextField.setBounds(450, 350, 130, 25);
         add(player1TextField);
         player1TextField.setToolTipText("Please type nick of Player1"); //tool tip
@@ -138,7 +138,6 @@ public class GameGui extends JFrame implements ActionListener {
 
         if (numberOfPlayersComboBox.getSelectedItem().toString().equals("bot")) {
             uSet.setPlayersCount(1);
-            uSet.setBot(new Bot());
         } else {
             uSet.setPlayersCount(2);
         }
