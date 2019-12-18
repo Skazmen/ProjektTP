@@ -12,37 +12,42 @@ public class GridPosition {
     public int x;
     public int y;
 
-    public GridPosition(){}
+    public GridPosition() {
+    }
 
-    public GridPosition(int x, int y){
+    public GridPosition(int x, int y) {
         chain = null;
         liberties = 4;
         this.x = x;
         this.y = y;
     }
 
-    void setPlayer(Player p){
+    void setPlayer(Player p) {
         this.player = p;
     }
 
-    Color getColor(){
-        if(player != null) return player.getColor();
+    Color getColor() {
+        if (player != null) return player.getColor();
         else return null;
     }
-    Player getPlayer(){
+
+    Player getPlayer() {
         return this.player;
     }
-    int getX(){
+
+    int getX() {
         return this.x;
     }
-    int getY(){
+
+    int getY() {
         return this.y;
     }
 
-    public int getLiberties(){
+    public int getLiberties() {
         return this.liberties;
     }
-    public void decreaseLiberties(){
+
+    public void decreaseLiberties() {
         this.liberties--;
     }
 }
