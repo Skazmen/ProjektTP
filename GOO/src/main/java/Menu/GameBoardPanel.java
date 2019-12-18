@@ -55,6 +55,16 @@ public class GameBoardPanel extends JPanel {
         repaint();
     }
 
+    public int[][] getPositions(){
+        int[][] temp = new int[size][size];
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
+                temp[row][col] = positions[row][col];
+            }
+        }
+        return temp;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

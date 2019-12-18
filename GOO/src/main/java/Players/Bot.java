@@ -9,6 +9,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.*;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 
@@ -24,6 +25,7 @@ public class Bot implements Player {
     private boolean move = false;
     private int size;
     GameBoardPanel board;
+    private int[][] grid;
 
     public Bot(int size) {
         this.nick = "Bot_" + ((int) Math.floor(1 + Math.random() * 999));
@@ -62,6 +64,9 @@ public class Bot implements Player {
                                 makeMove();
                                 break;
                             case UPDATE_BOARD_____:
+                                board.update(ExtractedGrid.fromString(restOfAnswer));
+                                grid = board.getPositions();
+                                System.out.println(Arrays.deepToString(grid));
                                 move = !move;
                                 if (move) {
                                     makeMove();
@@ -82,8 +87,8 @@ public class Bot implements Player {
 
     private void makeMove() {
         int[] position = new int[2];
-        position[0] = (int) Math.floor( Math.random() * 8 );
-        position[1] = (int) Math.floor( Math.random() * 8 );
+        position[0] = (int) Math.floor( Math.random() * (size-1) );
+        position[1] = (int) Math.floor( Math.random() * (size-1) );
         sendToServer(MessagesClient.MADE_MOVE________, (position[0] + "/" + position[1]));
     }
 
