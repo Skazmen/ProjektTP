@@ -85,12 +85,17 @@ class Board {
                             prevGiveUp = false;
                             System.out.println(player.getNickname() + " made move on position " + restOfAnswer);
                             if (game.checkMove(player, restOfAnswer)) {
+                                game.updateBoard(player, restOfAnswer);
                                 String grid = game.extractGrid().toString();
                                 sendToClient(player1, MessagesServer.UPDATE_BOARD_____, grid);
                                 sendToClient(player2, MessagesServer.UPDATE_BOARD_____, grid);
                                 prevGrid = grid;
                             } else {
                                 sendToClient(player, MessagesServer.WRONG_MOVE_______, "");
+                            }
+                            if(game.impossibleToMove()){
+                                sendToClient(player1, MessagesServer.END_GAME_________, "impossible");
+                                sendToClient(player2, MessagesServer.END_GAME_________, "impossible");
                             }
                             break;
                         case GIVE_UP_MOVE_____:

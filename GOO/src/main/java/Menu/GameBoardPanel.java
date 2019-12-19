@@ -32,7 +32,8 @@ public class GameBoardPanel extends JPanel {
                 / tileSize);
 
         if (row >= size || col >= size || row < 0 || col < 0) {
-            return null;
+            row = 0;
+            col = 0;
         }
 
         int[] position = new int[2];

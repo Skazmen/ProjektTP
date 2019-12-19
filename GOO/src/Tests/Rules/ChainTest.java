@@ -1,5 +1,6 @@
 package Rules;
 
+import Players.Bot;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +23,7 @@ class ChainTest {
 
     @Test
     void testAddStone() {
-        final Stone stone = new Stone(0, 0);
+        final Stone stone = new Stone(0, 0, 19, new Bot(19));
         chainUnderTest.addStone(stone);
     }
 

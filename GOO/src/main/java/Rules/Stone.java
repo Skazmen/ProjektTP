@@ -12,27 +12,25 @@ public class Stone {
     public int x;
     public int y;
 
-    public Stone() {
-    }
-
-    public Stone(int x, int y) {
-        chain = null;
-        liberties = 4;
+    public Stone(int x, int y, int size, Player p) {
+        this.chain = null;
         this.x = x;
         this.y = y;
+        this.player = p;
+
+        //calculate liberties
+        this.liberties = 4;
+        if( x == 0 || x == size-1 ) decreaseLiberties();
+        if( y == 0 || y == size-1 ) decreaseLiberties();
     }
 
-    void setPlayer(Player p) {
-        this.player = p;
+    Chain getChain(){
+        return this.chain;
     }
 
     Color getColor() {
         if (player != null) return player.getColor();
         else return null;
-    }
-
-    Player getPlayer() {
-        return this.player;
     }
 
     int getX() {
@@ -50,22 +48,9 @@ public class Stone {
     public void decreaseLiberties() {
         this.liberties--;
     }
-}
-
-/*public class Stone {
-
-    public Chain chain;
-    public Colours colour;
-    private int liberties;
-    public int row;
-    public int col;
-
-    public Stone(int row, int col, Colours colour) {
-        chain = null;
-        this.colour = colour;
-        liberties = 4;
-        this.row = row;
-        this.col = col;
+    public void increaseLiberties() {
+        this.liberties++;
     }
 
-}*/
+
+}

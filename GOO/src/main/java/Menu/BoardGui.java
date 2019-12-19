@@ -49,6 +49,7 @@ public class BoardGui extends JFrame {
     }
 
     private void createGUI(int size) {
+        //TODO zmienic rozmiar okna
         setSize(1366, 768);
         setTitle("Go game");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -181,6 +182,8 @@ public class BoardGui extends JFrame {
                             case END_GAME_________:
                                 if(restOfAnswer.equals("fin")){
                                     untimedNotification("The game has ended");
+                                } else if(restOfAnswer.equals("impossible")){
+                                    untimedNotification("The game has ended, no more possible moves");
                                 } else {
                                     untimedNotification("The game has ended and " + restOfAnswer + " lost");
                                 }

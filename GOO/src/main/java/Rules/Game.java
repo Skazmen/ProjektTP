@@ -4,17 +4,22 @@ import Players.HumanPlayer;
 import Players.Player;
 import Server.ExtractedGrid;
 
+import java.awt.*;
+import java.util.ArrayList;
+
 public class Game {
 
     private Stone[][] grid;
     private int size;
+    private int[][] possibilities;
 
     public Game(int size){
         this.size = size;
         this.grid = new Stone[size][size];
+        this.possibilities = new int[size][size];
         for(int i=0; i<size; i++){
             for(int j=0; j<size; j++){
-                grid[i][j] = new Stone();
+                possibilities[i][j] = 1;
             }
         }
     }
@@ -23,190 +28,98 @@ public class Game {
         ExtractedGrid ex = new ExtractedGrid(size);
         for (int i=0; i<size; i++){
             for(int j=0; j<size; j++){
-                ex.setPosition(i,j, grid[i][j].getColor());
+                if(grid[i][j]==null) ex.setPosition(i,j,null);
+                else ex.setPosition(i,j, grid[i][j].getColor());
             }
         }
         return ex;
     }
 
     public boolean checkMove(Player p, String encoded){
-        //TODO logika do sprawdzenia czy da sie polozyc na tej pozycji
-        // nie można położyć:
-        // - pkt bez oddechu
-        // - tak zeby zabrac ostatni oddech swojemu łańcuchowi (chyba ze taki ruch dusi kamienie przeciwnika)
+        // t o d o - nie można położyć tak zeby zabrac ostatni oddech swojemu łańcuchowi (chyba ze taki ruch dusi kamienie przeciwnika)
 
         String[] parts = encoded.split("/");
         int x = Integer.parseInt(parts[0]);
         int y = Integer.parseInt(parts[1]);
         boolean free = noPlayerInThatPlace(x,y);
         boolean liberties = hasLibertiesAround(x,y);
-        boolean notKamikadze = doesntTakeLastChainLiberty(x,y);
-
-        updateBoard(p,x,y);
-        return free && liberties && notKamikadze;
+        if(!liberties)     possibilities[x][y] = 0;
+        return free && liberties;
     }
 
 
     // zwraca true gdy na danej pozycji jest puste pole
     private boolean noPlayerInThatPlace(int x, int y) {
-        return grid[x][y].getPlayer() == null;
+        return grid[x][y] == null;
     }
     //zwraca true gdy dana pozycja ma co najmniej 1 oddech
     private boolean hasLibertiesAround(int x, int y) {
-        boolean up =    (y!=0       && grid[x][y-1]!=null);
-        boolean down =  (y!=size-1  && grid[x][y+1]!=null);
-        boolean left =  (x!=0       && grid[x-1][y]!=null);
-        boolean right = (x!=size-1  && grid[x+1][y]!=null);
-        System.out.println(up +" "+ down +" "+ left +" "+ right);
+        Color c = (grid[x][y]==null ? null : grid[x][y].getColor());
+        boolean up =    (y!=0       && (grid[x][y-1]==null || grid[x][y-1].getColor()==c));
+        boolean down =  (y!=size-1  && (grid[x][y+1]==null || grid[x][y+1].getColor()==c));
+        boolean left =  (x!=0       && (grid[x-1][y]==null || grid[x-1][y].getColor()==c));
+        boolean right = (x!=size-1  && (grid[x+1][y]==null || grid[x+1][y].getColor()==c));
         return up || down || left || right;
     }
-    //zwraca true gdy położenie w tej pozycji nie zabierze ostatniego oddechu łańcuchowi
-    private boolean doesntTakeLastChainLiberty(int x, int y){
-        //znaleźć łańcuch sąsiadujący
-        return true;
-    }
 
-    void updateBoard(Player p, int x, int y){
-        //TODO znikniecie kamieni które nie mają oddechów
-//        addStone(x,y,p);
-        grid[x][y].setPlayer(p);
-    }
 
-    public void addStone(int x, int y, HumanPlayer p) {
-        System.out.println("begin add");
-        Stone newStone = new Stone(x, y);
-        newStone.setPlayer(p);
+    public void updateBoard(Player p, String encoded) {
+        String[] parts = encoded.split("/");
+        int x = Integer.parseInt(parts[0]);
+        int y = Integer.parseInt(parts[1]);
+
+        Stone newStone = new Stone(x, y, size, p);
         grid[x][y] = newStone;
-        // sprawdza sąsiadów
-        Stone[] neighbors = new Stone[4];
-        //Nie sprawdza poza planszą
-        if (x > 0) {
-            neighbors[0] = grid[x - 1][y];
-        }
-        if (x < size - 1) {
-            neighbors[1] = grid[x + 1][y];
-        }
-        if (y > 1) {
-            neighbors[2] = grid[x][y - 1];
-        }
-        if (y < size - 1) {
-            neighbors[3] = grid[x][y + 1];
-        }
-        System.out.println("middle add");
+        possibilities[x][y] = 0;
+        // create array of neighbors
+        ArrayList<Stone> neighbors = new ArrayList<>();
+        if ((x > 0)      && grid[x-1][y]!=null)   neighbors.add( grid[x-1][y] );
+        if ((x < size-1) && grid[x+1][y]!=null)   neighbors.add( grid[x+1][y] );
+        if ((y > 1)      && grid[x][y-1]!=null)   neighbors.add( grid[x][y-1] );
+        if ((y < size-1) && grid[x][y+1]!=null)   neighbors.add( grid[x][y+1] );
+
         //Przygowywuje Łańcuch dla nowego kamienia
         Chain finalChain = new Chain();
         for (Stone neighbor : neighbors) {
-            //Nic, jeśli nie ma sąsiedniego kamienia
-            if (neighbor == null) {
-                continue;
-            }
-
             newStone.decreaseLiberties();
             neighbor.decreaseLiberties();
 
-            // Jeśli ma inny kolor niż nowy Kamień, sprawdza
+            // Jeśli ma inny kolor niż nowy Kamień, sprawdza czy zamknął inny łańcuch i powinien zniknąć
             if (neighbor.getColor() != newStone.getColor()) {
-                checkStone(neighbor);
+                checkIfClosesOtherChain(neighbor);
                 continue;
             }
 
-            if (neighbor.chain != null) {
-                finalChain.join(neighbor.chain);
+            if (neighbor.getChain() != null) {
+                finalChain.join(neighbor.getChain());
             }
         }
         finalChain.addStone(newStone);
-        System.out.println("end add");
     }
 
-    public void checkStone(Stone stone) {
+    public void checkIfClosesOtherChain(Stone stone) {
         // spradzamy wszystkie swobody, bo kamienie tworza lancuch
-        if (stone.chain.getLiberties() == 0) {
+        if (stone.getChain()!=null && stone.getChain().getLiberties() == 0) {
             for (Stone s : stone.chain.stones) {
-                s.chain = null;
                 grid[s.getX()][s.getY()] = null;
-            }
-        }
-    }
-
-}
-
-
-/*public class Grid {
-
-    private final int SIZE;
-    private Stone[][] stones;
-
-    public Grid(int size) {
-        SIZE = size;
-        stones = new Stone[SIZE][SIZE];
-    }
-
-    public void addStone(int row, int col, Colours colour) {
-        Stone newStone = new Stone(row, col, colour);
-        stones[row][col] = newStone;
-        // sprawdza sąsiadów
-        Stone[] neighbors = new Stone[4];
-        //Nie sprawdza poza planszą
-        if (row > 0) {
-            neighbors[0] = stones[row - 1][col];
-        }
-        if (row < SIZE - 1) {
-            neighbors[1] = stones[row + 1][col];
-        }
-        if (col > 1) {
-            neighbors[2] = stones[row][col - 1];
-        }
-        if (col < SIZE - 1) {
-            neighbors[3] = stones[row][col + 1];
-        }
-        //Przygowywuje Łańcuch dla nowego kamienia
-        Chain finalChain = new Chain();
-        for (Stone neighbor : neighbors) {
-            //Nic, jeśli nie ma sąsiedniego kamienia
-            if (neighbor == null) {
-                continue;
-            }
-
-            newStone.liberties--;
-            neighbor.liberties--;
-            // Jeśli ma inny kolor niż nowy Kamień, sprawdza
-            if (neighbor.colour != newStone.colour) {
-                checkStone(neighbor);
-                continue;
-            }
-
-            if (neighbor.chain != null) {
-                finalChain.join(neighbor.chain);
-            }
-        }
-        finalChain.addStone(newStone);
-    }
-
-    //Sprawdź swobody kamienia
-
-    public void checkStone(Stone stone) {
-        // spradzamy wszystkie swobody, bo kamienie tworza lancuch
-        if (stone.chain.getLiberties() == 0) {
-            for (Stone s : stone.chain.stones) {
                 s.chain = null;
-                stones[s.row][s.col] = null;
+                //dodanie spowrotem oddechow
+                if ((s.getX() > 0)      && grid[s.getX()-1][s.getY()]!=null)   grid[s.getX()-1][s.getY()].increaseLiberties();
+                if ((s.getX() < size-1) && grid[s.getX()+1][s.getY()]!=null)   grid[s.getX()+1][s.getY()].increaseLiberties();
+                if ((s.getY() > 1)      && grid[s.getX()][s.getY()-1]!=null)   grid[s.getX()][s.getY()-1].increaseLiberties();
+                if ((s.getY() < size-1) && grid[s.getX()][s.getY()+1]!=null)   grid[s.getX()][s.getY()+1].increaseLiberties();
             }
         }
     }
 
-
-
-    //Zwraca prawdę, jeśli dana pozycja jest zajęta przez jakis stone
-
-    public boolean isOccupied(int row, int col) {
-        return stones[row][col] != null;
-    }
-
-    public Colours getState(int row, int col) {
-        Stone stone = stones[row][col];
-        if (stone == null) {
-            return null;
-        } else
-            return stone.colour;
+    //zwraca true gdy nie da się już wykonać żadnego nowego ruchu
+    public boolean impossibleToMove() {
+        int sum = 0;
+        for(int i=0; i<size; i++){
+            for(int j=0; j<size; j++){
+                sum += possibilities[i][j];
+            }
         }
-}*/
+        return sum < (0.1*size*size);
+    }
+}
