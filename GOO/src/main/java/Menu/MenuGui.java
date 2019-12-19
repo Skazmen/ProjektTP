@@ -11,7 +11,7 @@ public class MenuGui extends JFrame implements ActionListener {
     private boolean first = true;
 
     public MenuGui() {
-        setSize(1366, 768);
+        setSize(1000, 800);
         setTitle("GO game");
         setLayout(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -19,7 +19,7 @@ public class MenuGui extends JFrame implements ActionListener {
 
         //Exit button
         exitButton = new JButton("EXIT");
-        exitButton.setBounds(1180, 660, 100, 30);
+        exitButton.setBounds(870, 620, 100, 30);
         add(exitButton);
         exitButton.setForeground(Color.black);
         exitButton.setContentAreaFilled(false);
@@ -29,7 +29,7 @@ public class MenuGui extends JFrame implements ActionListener {
 
         //New Game button
         newGameButton = new JButton("NEW GAME");
-        newGameButton.setBounds(1020, 530, 350, 50);
+        newGameButton.setBounds(620, 550, 350, 50);
         add(newGameButton);
         newGameButton.setForeground(Color.black);
         newGameButton.setContentAreaFilled(false);
@@ -39,7 +39,7 @@ public class MenuGui extends JFrame implements ActionListener {
 
         //Load game button
         /*loadGameButton = new JButton("LOAD");
-        loadGameButton.setBounds(1100, 600, 250, 50);
+        loadGameButton.setBounds(720, 400, 250, 50);
         add(loadGameButton);
         loadGameButton.setForeground(Color.black);
         loadGameButton.setContentAreaFilled(false);
@@ -50,7 +50,7 @@ public class MenuGui extends JFrame implements ActionListener {
         //Background
         backGroundLabel = new JLabel(new ImageIcon("images/GO_BG.jpg"));
         backGroundLabel.setOpaque(true);
-        backGroundLabel.setBounds(0, 0, 1366, 768);
+        backGroundLabel.setBounds(0, 0, 1000, 800);
         add(backGroundLabel);
     }
 

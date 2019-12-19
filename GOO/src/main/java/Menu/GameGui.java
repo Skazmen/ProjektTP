@@ -18,7 +18,7 @@ public class GameGui extends JFrame implements ActionListener {
     private boolean first = true;
 
     GameGui() {
-        setSize(1366, 768);
+        setSize(1000, 800);
         setTitle("Go game - New Game");
         setLayout(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -26,7 +26,7 @@ public class GameGui extends JFrame implements ActionListener {
 
         //Back button
         buttonBack = new JButton("BACK");
-        buttonBack.setBounds(1180, 660, 100, 30);
+        buttonBack.setBounds(870, 620, 100, 30);
         add(buttonBack);
         buttonBack.setForeground(Color.black);
         buttonBack.setContentAreaFilled(false);
@@ -36,35 +36,35 @@ public class GameGui extends JFrame implements ActionListener {
 
         //New Game button
         startButton = new JButton("START");
-        startButton.setBounds(1040, 660, 120, 30);
+        startButton.setBounds(670, 550, 300, 50);
         add(startButton);
         startButton.setForeground(Color.black);
         startButton.setContentAreaFilled(false);
         startButton.setToolTipText("Click here to go save");
-        startButton.setFont(new Font("SansSerif", Font.BOLD, 20));
+        startButton.setFont(new Font("SansSerif", Font.BOLD, 48));
         startButton.addActionListener(this);
 
         //New Game
         newGameLabel = new JLabel("Select type of game: ");
         newGameLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         newGameLabel.setForeground(Color.white);
-        newGameLabel.setBounds(220, 280, 230, 25);
+        newGameLabel.setBounds(120, 280, 230, 25);
         add(newGameLabel);
 
         gamePanelButtonGroup = new ButtonGroup();
         smallBoardRadioButton = new JRadioButton("smallBoard(9x9)");
         smallBoardRadioButton.setForeground(Color.white);
         smallBoardRadioButton.setContentAreaFilled(false);
-        smallBoardRadioButton.setBounds(440, 280, 145, 25);
+        smallBoardRadioButton.setBounds(340, 280, 145, 25);
         smallBoardRadioButton.setSelected(true); //randommly selected
 
         mediumBoardRadioButton = new JRadioButton("mediumBoard(13x13)");
-        mediumBoardRadioButton.setBounds(585, 280, 180, 25);
+        mediumBoardRadioButton.setBounds(485, 280, 180, 25);
         mediumBoardRadioButton.setForeground(Color.white);
         mediumBoardRadioButton.setContentAreaFilled(false);
 
         normalBoardRadioButton = new JRadioButton("normalBoard(19x19)");
-        normalBoardRadioButton.setBounds(760, 280, 175, 25);
+        normalBoardRadioButton.setBounds(660, 280, 175, 25);
         normalBoardRadioButton.setForeground(Color.white);
         normalBoardRadioButton.setContentAreaFilled(false);
 
@@ -79,25 +79,25 @@ public class GameGui extends JFrame implements ActionListener {
         numberOfPlayersLabel = new JLabel("Select opponennt:");
         numberOfPlayersLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         numberOfPlayersLabel.setForeground(Color.white);
-        numberOfPlayersLabel.setBounds(220, 315, 370, 25);
+        numberOfPlayersLabel.setBounds(120, 315, 370, 25);
         add(numberOfPlayersLabel);
 
         numberOfPlayersComboBox = new JComboBox();
         numberOfPlayersComboBox.addItem("another human");
         numberOfPlayersComboBox.addItem("bot");
-        numberOfPlayersComboBox.setBounds(450, 315, 175, 25);
+        numberOfPlayersComboBox.setBounds(350, 315, 175, 25);
         getContentPane().add(numberOfPlayersComboBox);
         numberOfPlayersComboBox.addActionListener(this);
 
         //nick of players
         nickLabel = new JLabel("Set nickname"); //check box
-        nickLabel.setBounds(220, 350, 200, 25);
+        nickLabel.setBounds(120, 350, 200, 25);
         nickLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         nickLabel.setForeground(Color.white);
         add(nickLabel);
 
         player1TextField = new JTextField("Player_" + ((int) Math.floor(1 + Math.random() * 999)));
-        player1TextField.setBounds(450, 350, 130, 25);
+        player1TextField.setBounds(350, 350, 130, 25);
         add(player1TextField);
         player1TextField.setToolTipText("Please type nick of Player1"); //tool tip
         player1TextField.setVisible(true);
@@ -105,7 +105,7 @@ public class GameGui extends JFrame implements ActionListener {
         //background
         backGroundLabel = new JLabel(new ImageIcon("images/GO_BG.jpg"));
         backGroundLabel.setOpaque(true);
-        backGroundLabel.setBounds(0, 0, 1366, 768);
+        backGroundLabel.setBounds(0, 0, 1000, 800);
         add(backGroundLabel);
     }
 

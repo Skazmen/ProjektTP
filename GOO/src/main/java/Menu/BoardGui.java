@@ -49,15 +49,14 @@ public class BoardGui extends JFrame {
     }
 
     private void createGUI(int size) {
-        //TODO zmienic rozmiar okna
-        setSize(1366, 768);
+        setSize(1000, 800);
         setTitle("Go game");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
         //skip
         JButton skipButton = new JButton("Skip Move");
-        skipButton.setBounds(1000, 560, 180, 30);
+        skipButton.setBounds(750, 600, 200, 30);
         getContentPane().add(skipButton);
         skipButton.setForeground(Color.white);
         skipButton.setContentAreaFilled(false);
@@ -73,7 +72,7 @@ public class BoardGui extends JFrame {
 
         //surrender
         JButton surrenderButton = new JButton("Surrender");
-        surrenderButton.setBounds(1000, 660, 180, 30);
+        surrenderButton.setBounds(750, 700, 200, 30);
         getContentPane().add(surrenderButton);
         surrenderButton.setForeground(Color.white);
         surrenderButton.setContentAreaFilled(false);
@@ -88,7 +87,7 @@ public class BoardGui extends JFrame {
 
         //board to show moves
         board = new GameBoardPanel(size);
-        board.setBounds(150, 40, 650, 650);
+        board.setBounds(50, 75, 650, 650);
         board.setVisible(false);
         getContentPane().add(board);
         board.addMouseListener(new MouseAdapter() {
@@ -106,7 +105,7 @@ public class BoardGui extends JFrame {
         //background
         JLabel backGroundLabel = new JLabel(new ImageIcon("images/loading.jpg"));
         backGroundLabel.setOpaque(true);
-        backGroundLabel.setBounds(0, 0, 1366, 768);
+        backGroundLabel.setBounds(0, 0, 1000, 800);
         getContentPane().add(backGroundLabel);
 
         //popup
@@ -128,7 +127,7 @@ public class BoardGui extends JFrame {
         stateLabel.setFont(stateLabel.getFont().deriveFont(30f));
         stateLabel.setHorizontalAlignment(JLabel.CENTER);
         stateLabel.setVerticalAlignment(JLabel.CENTER);
-        stateLabel.setBounds(0, 0, 1366, 768);
+        stateLabel.setBounds(0, 0, 1000, 800);
         getLayeredPane().add(stateLabel, JLayeredPane.POPUP_LAYER);
         stateLabel.setVisible(true);
     }
@@ -156,7 +155,7 @@ public class BoardGui extends JFrame {
                                 untimedNotification("Your color is Black");
                                 move = true;
                                 Thread.sleep(3000);
-                                timedNotification("Your move", 1000);
+                                timedNotification("Your move", 500);
                                 break;
                             case SET_COLOR_WHITE__:
                                 untimedNotification("Your color is White");
@@ -165,7 +164,7 @@ public class BoardGui extends JFrame {
                                 untimedNotification("Wait for opponent move");
                                 break;
                             case WRONG_MOVE_______:
-                                timedNotification("The move you tried to make is not allowed", 2000);
+                                timedNotification("The move you tried to make is not allowed", 1500);
                                 break;
                             case UPDATE_BOARD_____:
                                 if(!restOfAnswer.isEmpty()) {
@@ -174,7 +173,7 @@ public class BoardGui extends JFrame {
                                 move = !move;
                                 if (move) {
                                     endNotivication();
-                                    timedNotification("Your move", 1000);
+                                    timedNotification("Your move", 500);
                                 } else {
                                     untimedNotification("Wait for opponent move");
                                 }
