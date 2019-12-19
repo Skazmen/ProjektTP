@@ -86,7 +86,6 @@ public class Bot implements Player {
     }
 
     private void makeMove() {
-        //TODO dodać logike
         int[] position = new int[2];
         position[0] = (int) Math.floor( Math.random() * (size-1) );
         position[1] = (int) Math.floor( Math.random() * (size-1) );
