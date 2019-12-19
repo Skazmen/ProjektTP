@@ -198,7 +198,6 @@ public class BoardGui extends JFrame {
                                 break;
                             case CONNECTION_RES___:
                                 lastConnection = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss").parse(restOfAnswer);
-                                System.out.println(lastConnection);
                                 break;
 
                         }

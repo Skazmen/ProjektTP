@@ -9,7 +9,9 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.*;
+import java.text.ParseException;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 
@@ -76,11 +78,8 @@ public class Bot implements Player {
                             default: break;
                         }
                     }
-                    // TODO co zrobic gdy serwer sie nagle rozłaczy
-                } catch (ConnectException | UnknownHostException e) {
+                }  catch (IOException | NoSuchElementException e) {
                     System.out.println("Cannot connect to  server - run server first");
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         }).start();
@@ -91,7 +90,52 @@ public class Bot implements Player {
         int[] position = new int[2];
         position[0] = (int) Math.floor( Math.random() * (size-1) );
         position[1] = (int) Math.floor( Math.random() * (size-1) );
+        if(Math.random()<0.5){
+            int c = ( color==Color.BLACK ? 1 : -1 );
+            //zmajduje pionek o tym samym kolorze
+            for(int i=1; i<size-1; i++){
+                for(int j=1; j<size-1; j++){
+                    if(grid[i][j] == c){
+                        //znajduje sasiada
+                        int deltaX, deltaY;
+                        if(Math.random()>0.5) {
+                            deltaX=0;
+                            deltaY = (Math.random()>0.5 ? +1 : -1);
+                        } else {
+                            deltaX = (Math.random()>0.5 ? +1 : -1);
+                            deltaY=0;
+                        }
+                        position[0] = i + deltaX;
+                        position[1] = j + deltaY;
+                    }
+                }
+            }
+        } else if(Math.random()<0.8){
+            int c = ( color==Color.BLACK ? 1 : -1 );
+            //zmajduje pionek o przeciwnym kolorze
+            for(int i=1; i<size-1; i++){
+                for(int j=1; j<size-1; j++){
+                    if(grid[i][j] == c*(-1)){
+                        //znajduje sasiada
+                        int deltaX, deltaY;
+                        if(Math.random()>0.5) {
+                            deltaX=0;
+                            deltaY = (Math.random()>0.5 ? +1 : -1);
+                        } else {
+                            deltaX = (Math.random()>0.5 ? +1 : -1);
+                            deltaY=0;
+                        }
+                        position[0] = i + deltaX;
+                        position[1] = j + deltaY;
+                    }
+                }
+            }
+        } else {
+            position[0] = (int) Math.floor( Math.random() * (size-1) );
+            position[1] = (int) Math.floor( Math.random() * (size-1) );
+        }
         sendToServer(MessagesClient.MADE_MOVE________, (position[0] + "/" + position[1]));
+
     }
 
     private void sendToServer(final MessagesClient message, final String additionalInfo) {

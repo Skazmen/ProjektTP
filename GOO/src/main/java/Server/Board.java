@@ -74,7 +74,6 @@ class Board {
     private void listenForPlayer(final Player player) {
         new Thread(new Runnable() {
             Scanner scanner = player.getInputStream();
-            //TODO zrobic obsługe błedów przy komunikacji
 
             @Override
             public void run() {
