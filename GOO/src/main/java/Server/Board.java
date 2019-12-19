@@ -11,7 +11,13 @@ import Rules.Game;
 import java.awt.*;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
+
+import static java.lang.System.exit;
 
 class Board {
     private Player player1;
@@ -72,60 +78,72 @@ class Board {
 
             @Override
             public void run() {
-                while (listen) {
-                    String clientAnswer = scanner.nextLine();
-                    MessagesClient messagesClient = MessagesClient.valueOf(clientAnswer.substring(0, 17));
-                    String restOfAnswer = clientAnswer.substring(17);
-                    switch (messagesClient) {
-                        case WAITING_FOR_GAME_:
-                            System.out.println(player.getNickname() + " is waiting for another player");
-                            checkGameCreation();
-                            break;
-                        case MADE_MOVE________:
-                            prevGiveUp = false;
-                            System.out.println(player.getNickname() + " made move on position " + restOfAnswer);
-                            if (game.checkMove(player, restOfAnswer)) {
-                                game.updateBoard(player, restOfAnswer);
-                                String grid = game.extractGrid().toString();
-                                sendToClient(player1, MessagesServer.UPDATE_BOARD_____, grid);
-                                sendToClient(player2, MessagesServer.UPDATE_BOARD_____, grid);
-                                prevGrid = grid;
-                            } else {
-                                sendToClient(player, MessagesServer.WRONG_MOVE_______, "");
-                            }
-                            if(game.impossibleToMove()){
-                                sendToClient(player1, MessagesServer.END_GAME_________, "impossible");
-                                sendToClient(player2, MessagesServer.END_GAME_________, "impossible");
-                            }
-                            break;
-                        case GIVE_UP_MOVE_____:
-                            if(prevGiveUp) {
-                                sendToClient(player1, MessagesServer.END_GAME_________, "fin");
-                                sendToClient(player2, MessagesServer.END_GAME_________, "fin");
-                            } else {
-                                System.out.println(player.getNickname() + " decided not to move this time");
-                                sendToClient(player1, MessagesServer.UPDATE_BOARD_____, prevGrid);
-                                sendToClient(player2, MessagesServer.UPDATE_BOARD_____, prevGrid);
-                                prevGiveUp = true;
-                            }
-                            break;
-                        case SURRENDER________:
-                            System.out.println(player.getNickname() + " surrendered the game");
-                            sendToClient(player1, MessagesServer.END_GAME_________, player.getNickname());
-                            sendToClient(player2, MessagesServer.END_GAME_________, player.getNickname());
+                try {
+                    while (listen) {
+                        String clientAnswer = scanner.nextLine();
+                        MessagesClient messagesClient = MessagesClient.valueOf(clientAnswer.substring(0, 17));
+                        String restOfAnswer = clientAnswer.substring(17);
+                        switch (messagesClient) {
+                            case WAITING_FOR_GAME_:
+                                System.out.println(player.getNickname() + " is waiting for another player");
+                                checkGameCreation();
+                                break;
+                            case MADE_MOVE________:
+                                prevGiveUp = false;
+                                System.out.println(player.getNickname() + " made move on position " + restOfAnswer);
+                                if (game.checkMove(player, restOfAnswer)) {
+                                    game.updateBoard(player, restOfAnswer);
+                                    String grid = game.extractGrid().toString();
+                                    sendToClient(player1, MessagesServer.UPDATE_BOARD_____, grid);
+                                    sendToClient(player2, MessagesServer.UPDATE_BOARD_____, grid);
+                                    prevGrid = grid;
+                                } else {
+                                    sendToClient(player, MessagesServer.WRONG_MOVE_______, "");
+                                }
+                                if (game.impossibleToMove()) {
+                                    sendToClient(player1, MessagesServer.END_GAME_________, "impossible");
+                                    sendToClient(player2, MessagesServer.END_GAME_________, "impossible");
+                                }
+                                break;
+                            case GIVE_UP_MOVE_____:
+                                if (prevGiveUp) {
+                                    sendToClient(player1, MessagesServer.END_GAME_________, "fin");
+                                    sendToClient(player2, MessagesServer.END_GAME_________, "fin");
+                                } else {
+                                    System.out.println(player.getNickname() + " decided not to move this time");
+                                    sendToClient(player1, MessagesServer.UPDATE_BOARD_____, prevGrid);
+                                    sendToClient(player2, MessagesServer.UPDATE_BOARD_____, prevGrid);
+                                    prevGiveUp = true;
+                                }
+                                break;
+                            case SURRENDER________:
+                                System.out.println(player.getNickname() + " surrendered the game");
+                                sendToClient(player1, MessagesServer.END_GAME_________, player.getNickname());
+                                sendToClient(player2, MessagesServer.END_GAME_________, player.getNickname());
 
-                            break;
-                        case CLOSE____________:
-                            // stops listening to client when he closes his window
-                            listen = false;
-                            System.out.println(player.getNickname() + " disconnected");
-                            sendToClient(player1, MessagesServer.END_GAME_________, player.getNickname());
-                            sendToClient(player2, MessagesServer.END_GAME_________, player.getNickname());
-                            player1 = null;
-                            player2 = null;
-                            break;
+                                break;
+                            case CLOSE____________:
+                                // stops listening to client when he closes his window
+                                listen = false;
+                                System.out.println(player.getNickname() + " disconnected");
+                                sendToClient(player1, MessagesServer.END_GAME_________, player.getNickname());
+                                sendToClient(player2, MessagesServer.END_GAME_________, player.getNickname());
+                                player1 = null;
+                                player2 = null;
+                                exit(0);
+                                break;
+                            case CHECK_CONNECTION_:
+                                Calendar cal = Calendar.getInstance();
+                                cal.setTime(new Date());
+                                String time = cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH) + 1) + "/" + cal.get(Calendar.DAY_OF_MONTH) + "/" + cal.get(Calendar.HOUR_OF_DAY) + "/" + cal.get(Calendar.MINUTE) + "/" + cal.get(Calendar.SECOND);
+                                sendToClient(player, MessagesServer.CONNECTION_RES___, time);
+                                break;
+                        }
+
                     }
-
+                } catch (NoSuchElementException e){
+                    sendToClient(player1, MessagesServer.END_GAME_________, "server");
+                    sendToClient(player2, MessagesServer.END_GAME_________, "server");
                 }
             }
         }).start();

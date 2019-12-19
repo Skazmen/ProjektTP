@@ -16,6 +16,11 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.file.NoSuchFileException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 
@@ -26,6 +31,7 @@ public class BoardGui extends JFrame {
     private JLabel stateLabel;
     GameBoardPanel board;
     boolean move = false;
+    private Date lastConnection;
 
     BoardGui(UserSettings uSet) {
 
@@ -144,6 +150,7 @@ public class BoardGui extends JFrame {
                     String settings = objectMapper.writeValueAsString(uSet);
                     out.println(settings);
 
+                    connectionCheck();
                     sync.countDown(); //sygnalize 'out' is initialized
 
                     while (true) {
@@ -183,19 +190,21 @@ public class BoardGui extends JFrame {
                                     untimedNotification("The game has ended");
                                 } else if(restOfAnswer.equals("impossible")){
                                     untimedNotification("The game has ended, no more possible moves");
+                                } else if(restOfAnswer.equals("server")){
+                                    untimedNotification("The game has ended due to server problems");
                                 } else {
                                     untimedNotification("The game has ended and " + restOfAnswer + " lost");
                                 }
                                 break;
+                            case CONNECTION_RES___:
+                                lastConnection = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss").parse(restOfAnswer);
+                                System.out.println(lastConnection);
+                                break;
+
                         }
                     }
-                    // TODO co zrobic gdy serwer sie nagle rozłaczy
-                } catch (ConnectException | UnknownHostException e) {
+                } catch (IOException | InterruptedException | ParseException | NoSuchElementException e) {
                     System.out.println("Cannot connect to  server - run server first");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
             }
         }).start();
@@ -246,5 +255,28 @@ public class BoardGui extends JFrame {
 
     private void endNotivication() {
         stateLabel.setVisible(false);
+    }
+
+    private void connectionCheck() {
+        final int time = 5000; //co jaki czas jest wysyłany sygnał
+        lastConnection = new Date();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while(true){
+                        Thread.sleep(time);
+                        sendToServer(MessagesClient.CHECK_CONNECTION_,"");
+                        int diff = (int) Math.abs((new Date()).getTime() - lastConnection.getTime());
+                        if(diff > 3*time){
+                            untimedNotification("The game has ended due to server problems");
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 }
