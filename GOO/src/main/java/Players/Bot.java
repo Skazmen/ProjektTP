@@ -94,7 +94,7 @@ public class Bot implements Player {
             //zmajduje pionek o tym samym kolorze
             for(int i=1; i<size-1; i++){
                 for(int j=1; j<size-1; j++){
-                    if(grid[i][j] == c){
+                    if(i<grid.length && i<grid[i].length && grid[i][j] == c){
                         //znajduje sasiada
                         int deltaX, deltaY;
                         if(Math.random()>0.5) {
