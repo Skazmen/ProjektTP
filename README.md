@@ -12,6 +12,10 @@ The server can suport two players, one one player and one bot. At the beginning 
 Then the game follows as the instructions on screen says. There are a bunch of functions that make sure both players remain connected to server, and the information is tarnfered without interruptions, as well as live checker if player is allowed to make that move.
 The bot is not even near AI or any semi-intelligent program, but has a logic that allows him to win from time to time.
 
+# Creators
+* [Szymon Kazimierczak](https://github.com/Skazmen)
+* [Kamil Matejuk](https://github.com/kamilmatejuk)
+
 ###### Options
 ![](app-overview-start.png)
 ###### Player vs Player
