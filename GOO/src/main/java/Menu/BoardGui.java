@@ -109,7 +109,7 @@ public class BoardGui extends JFrame {
         });
 
         //background
-        JLabel backGroundLabel = new JLabel(new ImageIcon("images/loading.jpg"));
+        JLabel backGroundLabel = new JLabel(new ImageIcon("GOO/images/loading.jpg"));
         backGroundLabel.setOpaque(true);
         backGroundLabel.setBounds(0, 0, 1000, 800);
         getContentPane().add(backGroundLabel);

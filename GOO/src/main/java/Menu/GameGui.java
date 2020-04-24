@@ -103,7 +103,7 @@ public class GameGui extends JFrame implements ActionListener {
         player1TextField.setVisible(true);
 
         //background
-        backGroundLabel = new JLabel(new ImageIcon("images/GO_BG.jpg"));
+        backGroundLabel = new JLabel(new ImageIcon("GOO/images/GO_BG.jpg"));
         backGroundLabel.setOpaque(true);
         backGroundLabel.setBounds(0, 0, 1000, 800);
         add(backGroundLabel);
